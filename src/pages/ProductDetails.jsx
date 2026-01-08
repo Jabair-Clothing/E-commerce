@@ -59,7 +59,7 @@ const ProductDetails = () => {
                 // Add value if not exists
                 if (
                   !attrs[attr.attribute_name].find(
-                    (v) => v.value_id === attr.value_id
+                    (v) => v.id === attr.value_id
                   )
                 ) {
                   attrs[attr.attribute_name].push({
