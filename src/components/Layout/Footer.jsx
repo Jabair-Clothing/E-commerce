@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Mail } from "lucide-react";
 
 const Footer = () => {
@@ -41,24 +42,36 @@ const Footer = () => {
             <h4 className="font-semibold text-lg mb-4">Shop</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li>
-                <a href="#" className="hover:text-lagoon-300 transition-colors">
+                <Link
+                  to="/shop"
+                  className="hover:text-lagoon-300 transition-colors"
+                >
                   New Arrivals
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-lagoon-300 transition-colors">
+                <Link
+                  to="/shop"
+                  className="hover:text-lagoon-300 transition-colors"
+                >
                   Women
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-lagoon-300 transition-colors">
+                <Link
+                  to="/shop"
+                  className="hover:text-lagoon-300 transition-colors"
+                >
                   Men
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-lagoon-300 transition-colors">
+                <Link
+                  to="/shop"
+                  className="hover:text-lagoon-300 transition-colors"
+                >
                   Accessories
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -66,24 +79,36 @@ const Footer = () => {
             <h4 className="font-semibold text-lg mb-4">Help</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li>
-                <a href="#" className="hover:text-lagoon-300 transition-colors">
+                <Link
+                  to="/contact"
+                  className="hover:text-lagoon-300 transition-colors"
+                >
                   Customer Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-lagoon-300 transition-colors">
+                <Link
+                  to="/returns"
+                  className="hover:text-lagoon-300 transition-colors"
+                >
                   Returns & Exchanges
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-lagoon-300 transition-colors">
-                  Shipping Info
-                </a>
+                <Link
+                  to="/about"
+                  className="hover:text-lagoon-300 transition-colors"
+                >
+                  About Us
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-lagoon-300 transition-colors">
+                <Link
+                  to="/contact"
+                  className="hover:text-lagoon-300 transition-colors"
+                >
                   Contact Us
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -124,12 +149,12 @@ const Footer = () => {
             . All rights reserved.
           </p>
           <div className="flex space-x-4 mt-4 md:mt-0">
-            <a href="#" className="hover:text-gray-300">
+            <Link to="/privacy-policy" className="hover:text-gray-300">
               Privacy Policy
-            </a>
-            <a href="#" className="hover:text-gray-300">
+            </Link>
+            <Link to="/terms" className="hover:text-gray-300">
               Terms of Service
-            </a>
+            </Link>
           </div>
         </div>
       </div>

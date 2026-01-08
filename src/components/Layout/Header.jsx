@@ -274,7 +274,7 @@ const Header = () => {
               </div>
             </div>
 
-            {["Shop", "About", "Contact"].map((item) => (
+            {["Shop", "About", "Returns", "Contact"].map((item) => (
               <Link
                 key={item}
                 to={`/${item.toLowerCase()}`}
@@ -518,7 +518,7 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-100 py-4 px-4 shadow-lg absolute w-full left-0 animate-fade-in-down h-[calc(100vh-80px)] overflow-y-auto z-40">
             <div className="flex flex-col space-y-4">
-              {["Home", "Shop", "About", "Contact"].map((item) => (
+              {["Home", "Shop", "About", "Returns", "Contact"].map((item) => (
                 <Link
                   key={item}
                   to={item === "Home" ? "/" : `/${item.toLowerCase()}`}

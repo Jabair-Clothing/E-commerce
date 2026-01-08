@@ -20,6 +20,10 @@ import Header from "./components/Layout/Header";
 import Footer from "./components/Layout/Footer";
 import Contact from "./pages/Contact";
 import Checkout from "./pages/Checkout";
+import About from "./pages/About";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
+import Returns from "./pages/Returns";
 
 const App = () => {
   return (
@@ -36,6 +40,10 @@ const App = () => {
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/returns" element={<Returns />} />
                     <Route
                       path="/product/:id/:slug"
                       element={<ProductDetails />}
