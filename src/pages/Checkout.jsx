@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { fetchOrderInfo } from "../services/api";
-import { Loader2, Truck, CreditCard, MapPin, Calculator } from "lucide-react";
+import {
+  Loader2,
+  Truck,
+  CreditCard,
+  MapPin,
+  Calculator,
+  ShoppingBag,
+} from "lucide-react";
+
+import AuthModal from "../components/Auth/AuthModal";
 
 const Checkout = () => {
-  const { cartItems: cart } = useCart();
+  const { cartItems: cart, updateQuantity, removeFromCart } = useCart();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [orderInfo, setOrderInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Auth Modal State
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState("login");
 
   // Form State (Placeholder for now as focus is on costs)
   const [shippingMethod, setShippingMethod] = useState("inside"); // inside, outside, pickup
@@ -81,6 +96,67 @@ const Checkout = () => {
 
   const costs = calculateCosts();
 
+  // Wait for auth check
+  if (authLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-lagoon-600 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <div className="container mx-auto px-4 py-16 animate-fade-in flex flex-col items-center justify-center text-center max-w-md">
+          <div className="bg-lagoon-100 p-4 rounded-full mb-6">
+            <Calculator className="w-8 h-8 text-lagoon-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Login Required
+          </h1>
+          <p className="text-gray-500 mb-8">
+            Please log in to proceed with your checkout. Accounts help track
+            your orders and save your details.
+          </p>
+
+          <div className="space-y-3 w-full">
+            <button
+              onClick={() => {
+                setAuthModalTab("login");
+                setIsAuthModalOpen(true);
+              }}
+              className="block w-full bg-lagoon-600 text-white py-3 rounded-xl font-bold hover:bg-lagoon-700 transition-colors"
+            >
+              Log In
+            </button>
+            <div className="relative flex py-2 items-center">
+              <div className="flex-grow border-t border-gray-200"></div>
+              <span className="flex-shrink-0 mx-4 text-gray-400 text-xs">
+                OR
+              </span>
+              <div className="flex-grow border-t border-gray-200"></div>
+            </div>
+            <button
+              onClick={() => {
+                setAuthModalTab("register");
+                setIsAuthModalOpen(true);
+              }}
+              className="block w-full bg-white border-2 border-gray-100 text-gray-700 py-3 rounded-xl font-bold hover:border-lagoon-600 hover:text-lagoon-600 transition-colors"
+            >
+              Create an Account
+            </button>
+          </div>
+        </div>
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          initialTab={authModalTab}
+        />
+      </>
+    );
+  }
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -107,6 +183,70 @@ const Checkout = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Options */}
         <div className="lg:col-span-2 space-y-8">
+          {/* Order Items */}
+          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <ShoppingBag className="w-5 h-5 text-lagoon-600" />
+              Order Items
+            </h2>
+            <div className="space-y-4">
+              {cart.map((item) => (
+                <div
+                  key={item.uniqueId}
+                  className="flex items-center gap-4 py-4 border-b border-gray-50 last:border-0"
+                >
+                  <img
+                    src={
+                      item.image ||
+                      "https://dummyimage.com/100x100/f3f4f6/9ca3af&text=No+Image"
+                    }
+                    alt={item.name}
+                    className="w-16 h-16 rounded-lg object-cover bg-gray-50"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900">{item.name}</h3>
+                    <div className="text-sm text-gray-500">
+                      Tk {item.price} x {item.quantity}
+                    </div>
+                  </div>
+
+                  {/* Quantity Controls */}
+                  <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1">
+                    <button
+                      onClick={() => {
+                        if (item.quantity > 1) {
+                          updateQuantity(item.uniqueId, item.quantity - 1);
+                        } else {
+                          if (confirm("Remove item from cart?")) {
+                            removeFromCart(item.uniqueId);
+                          }
+                        }
+                      }}
+                      className="w-8 h-8 flex items-center justify-center bg-white rounded-md shadow-sm text-gray-600 hover:text-lagoon-600 transition-colors"
+                    >
+                      -
+                    </button>
+                    <span className="font-semibold text-gray-900 w-4 text-center">
+                      {item.quantity}
+                    </span>
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.uniqueId, item.quantity + 1)
+                      }
+                      className="w-8 h-8 flex items-center justify-center bg-white rounded-md shadow-sm text-gray-600 hover:text-lagoon-600 transition-colors"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <div className="font-bold text-gray-900 w-24 text-right">
+                    Tk {(item.price * item.quantity).toFixed(2)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Shipping Method */}
           <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
             <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">

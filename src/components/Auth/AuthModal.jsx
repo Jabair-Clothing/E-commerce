@@ -2,11 +2,19 @@ import React, { useState } from "react";
 import { X, Mail, Lock, User, Phone, Loader2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
-const AuthModal = ({ isOpen, onClose }) => {
+const AuthModal = ({ isOpen, onClose, initialTab = "login" }) => {
   const { login, register } = useAuth();
-  const [activeTab, setActiveTab] = useState("login");
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Reset tab when modal opens or initialTab changes
+  React.useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab);
+      setError(null);
+    }
+  }, [isOpen, initialTab]);
 
   // Login State
   const [loginEmail, setLoginEmail] = useState("");
