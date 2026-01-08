@@ -214,9 +214,9 @@ export const fetchOrderDetails = async (invoiceCode) => {
 
 
 // Wishlist APIs
-export const fetchWishlist = async (page = 1, limit = 10) => {
+export const fetchWishlist = async () => {
     try {
-        const response = await api.get(`/wishlist?page=${page}&limit=${limit}`);
+        const response = await api.get("/wishlist");
         return response.data;
     } catch (error) {
         throw error;

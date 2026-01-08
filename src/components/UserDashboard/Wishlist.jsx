@@ -93,11 +93,11 @@ const Wishlist = ({ user }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {wishlistItems.map((item) => (
             <div
-              key={item.wishlistId}
+              key={item.wishlist_id}
               className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-all relative"
             >
               <button
-                onClick={() => handleRemoveFromWishlist(item.wishlistId)}
+                onClick={() => handleRemoveFromWishlist(item.wishlist_id)}
                 className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full text-gray-400 hover:text-red-500 shadow-sm border border-gray-100 z-10 transition-colors"
                 title="Remove from wishlist"
               >
@@ -108,10 +108,10 @@ const Wishlist = ({ user }) => {
                 to={`/product/${item.product_id}/${item.product_slug}`}
                 className="block relative aspect-[4/5] bg-gray-100 overflow-hidden"
               >
-                {item.image ? (
+                {item.image_url ? (
                   <img
-                    src={item.image}
-                    alt={item.name}
+                    src={item.image_url}
+                    alt={item.product_name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : (
@@ -127,7 +127,7 @@ const Wishlist = ({ user }) => {
                   className="block"
                 >
                   <h3 className="font-semibold text-gray-900 mb-1 truncate hover:text-lagoon-600 transition-colors">
-                    {item.name || "Product Name"}
+                    {item.product_name || "Product Name"}
                   </h3>
                 </Link>
                 <p className="font-bold text-gray-900">
