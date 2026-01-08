@@ -12,6 +12,8 @@ import {
   fetchProducts,
   fetchParentCategories,
   fetchParentCategory,
+  recordCategoryView,
+  recordParentCategoryView,
 } from "../services/api";
 
 import { useCart } from "../context/CartContext";
@@ -149,6 +151,15 @@ const Shop = () => {
 
     loadProducts();
   }, [debouncedSearch, filters.parent_category_id, filters.category_id]);
+
+  // 4. Track Category Views
+  useEffect(() => {
+    if (filters.category_id) {
+      recordCategoryView(filters.category_id);
+    } else if (filters.parent_category_id) {
+      recordParentCategoryView(filters.parent_category_id);
+    }
+  }, [filters.category_id, filters.parent_category_id]);
 
   // Handlers
   const handleSearchChange = (e) => {

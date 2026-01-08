@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { fetchParentCategories, fetchParentCategory } from "../services/api";
+import {
+  fetchParentCategories,
+  fetchParentCategory,
+  recordParentCategoryView,
+} from "../services/api";
 import { ArrowRight, Loader2 } from "lucide-react";
 
 const CategoryPage = () => {
@@ -21,6 +25,9 @@ const CategoryPage = () => {
           );
 
           if (matchedParent) {
+            // Record View
+            recordParentCategoryView(matchedParent.id);
+
             // 2. Fetch detailed info (subcategories) for this parent
             const detailResponse = await fetchParentCategory(matchedParent.id);
             if (detailResponse.success) {

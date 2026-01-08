@@ -94,6 +94,26 @@ export const recordProductView = async (productId) => {
     }
 };
 
+export const recordParentCategoryView = async (id) => {
+    try {
+        const response = await api.post("/categories/parents/view", { parent_category_id: id });
+        return response.data;
+    } catch (error) {
+        console.error("Error recording parent category view:", error);
+        return null; // Silent fail
+    }
+};
+
+export const recordCategoryView = async (id) => {
+    try {
+        const response = await api.post("/categories/view", { category_id: id });
+        return response.data;
+    } catch (error) {
+        console.error("Error recording category view:", error);
+        return null; // Silent fail
+    }
+};
+
 // Keeping mock product service for now as no API was provided for products
 export const fetchFeaturedProducts = async () => {
     return new Promise((resolve) => {
