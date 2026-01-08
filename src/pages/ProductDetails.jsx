@@ -5,6 +5,7 @@ import {
   fetchWishlist,
   addToWishlist,
   removeFromWishlist,
+  recordProductView,
 } from "../services/api";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -50,6 +51,9 @@ const ProductDetails = () => {
               productData.price
           );
           setDisplayImage(productData.primary_image);
+
+          // Record View
+          recordProductView(productData.id);
 
           // Process Attributes from SKUs
           if (productData.skus && productData.skus.length > 0) {

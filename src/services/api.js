@@ -83,6 +83,17 @@ export const fetchProduct = async (id) => {
     }
 };
 
+export const recordProductView = async (productId) => {
+    try {
+        const response = await api.post("/products/view", { product_id: productId });
+        return response.data;
+    } catch (error) {
+        console.error("Error recording product view:", error);
+        // We don't throw here to prevent blocking the UI for tracking fails
+        return null;
+    }
+};
+
 // Keeping mock product service for now as no API was provided for products
 export const fetchFeaturedProducts = async () => {
     return new Promise((resolve) => {
