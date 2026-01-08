@@ -28,12 +28,20 @@ const ProductCard = ({ product }) => {
           </button>
         </div>
 
-        {/* Discount Badge (Mock) */}
-        {product.id % 3 === 0 && (
-          <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-            SALE
-          </span>
-        )}
+        {/* Discount Badge */}
+        {product.discount_price &&
+          parseFloat(product.discount_price) <
+            parseFloat(product.regular_price || product.price) && (
+            <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded shadow-md z-10">
+              {Math.round(
+                ((parseFloat(product.regular_price || product.price) -
+                  parseFloat(product.discount_price)) /
+                  parseFloat(product.regular_price || product.price)) *
+                  100
+              )}
+              % OFF
+            </span>
+          )}
       </div>
 
       {/* Product Details */}
@@ -43,9 +51,29 @@ const ProductCard = ({ product }) => {
           {product.name}
         </h3>
         <div className="flex items-center justify-between">
-          <span className="text-lg font-bold text-gray-900">
-            Tk {product.price.toFixed(2)}
-          </span>
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-gray-900">
+              Tk {product.discount_price || product.price}
+            </span>
+            {product.discount_price &&
+              parseFloat(product.discount_price) <
+                parseFloat(product.regular_price || product.price) && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-400 line-through">
+                    Tk {product.regular_price || product.price}
+                  </span>
+                  <span className="text-xs font-bold text-red-500">
+                    {Math.round(
+                      ((parseFloat(product.regular_price || product.price) -
+                        parseFloat(product.discount_price)) /
+                        parseFloat(product.regular_price || product.price)) *
+                        100
+                    )}
+                    % OFF
+                  </span>
+                </div>
+              )}
+          </div>
           <div className="flex space-x-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <span

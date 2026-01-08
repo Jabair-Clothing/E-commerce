@@ -44,7 +44,11 @@ const ProductDetails = () => {
         if (response.success) {
           const productData = response.data;
           setProduct(productData);
-          setDisplayPrice(productData.price);
+          setDisplayPrice(
+            productData.discount_price ||
+              productData.final_price ||
+              productData.price
+          );
           setDisplayImage(productData.primary_image);
 
           // Process Attributes from SKUs
@@ -145,7 +149,7 @@ const ProductDetails = () => {
     if (!hasAttributes && product.skus.length === 1) {
       const sku = product.skus[0];
       setActiveSku(sku);
-      setDisplayPrice(sku.price);
+      setDisplayPrice(sku.final_price || sku.discount_price || sku.price);
       if (sku.image) setDisplayImage(sku.image);
       return;
     }
@@ -194,7 +198,9 @@ const ProductDetails = () => {
 
       if (match && selectedKeys.length === requiredAttrCount) {
         setActiveSku(match);
-        setDisplayPrice(match.price);
+        setDisplayPrice(
+          match.final_price || match.discount_price || match.price
+        );
         if (match.image) setDisplayImage(match.image);
       } else {
         setActiveSku(null);
@@ -202,7 +208,9 @@ const ProductDetails = () => {
         // Keeping base price might be confusing if variants are expensive.
         // Let's keep it simple: if full match, show specific price. Else base.
         if (selectedKeys.length !== requiredAttrCount) {
-          setDisplayPrice(product.price);
+          setDisplayPrice(
+            product.discount_price || product.final_price || product.price
+          );
         }
       }
     }

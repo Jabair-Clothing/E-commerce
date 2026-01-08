@@ -22,6 +22,44 @@ const ProductInfo = ({ product, activeSku, displayPrice }) => {
         <span className="text-3xl font-bold text-gray-900">
           Tk {displayPrice}
         </span>
+
+        {/* Discount Logic */}
+        {(() => {
+          // Determine Original Price to show formatted
+          const originalPrice = activeSku
+            ? parseFloat(activeSku.price) >
+              parseFloat(activeSku.final_price || activeSku.discount_price || 0)
+              ? activeSku.price
+              : null
+            : parseFloat(product.regular_price || product.base_price) >
+              parseFloat(
+                product.discount_price || product.final_price || product.price
+              )
+            ? product.regular_price || product.base_price
+            : null;
+
+          // Only show if we have an original price and it's greater than display
+          if (
+            originalPrice &&
+            parseFloat(originalPrice) > parseFloat(displayPrice)
+          ) {
+            return (
+              <>
+                <span className="text-lg text-gray-400 line-through">
+                  Tk {originalPrice}
+                </span>
+                <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-bold rounded-lg">
+                  {Math.round(
+                    ((originalPrice - displayPrice) / originalPrice) * 100
+                  )}
+                  % OFF
+                </span>
+              </>
+            );
+          }
+          return null;
+        })()}
+
         {activeSku && activeSku.quantity < 10 && activeSku.quantity > 0 && (
           <span className="text-red-500 text-sm font-medium">
             Only {activeSku.quantity} items left!

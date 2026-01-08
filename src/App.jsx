@@ -9,6 +9,7 @@ import MainLayout from "./components/Layout/MainLayout";
 import Home from "./pages/Home";
 import { CategoryProvider } from "./context/CategoryContext";
 import CategoryPage from "./pages/CategoryPage";
+import AllCategories from "./pages/AllCategories";
 import Shop from "./pages/Shop";
 import ProductDetails from "./pages/ProductDetails";
 import { CartProvider } from "./context/CartContext";
@@ -39,6 +40,7 @@ const App = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/shop" element={<Shop />} />
+                    <Route path="/categories" element={<AllCategories />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />

@@ -56,7 +56,14 @@ export const CartProvider = ({ children }) => {
           skuId: sku ? sku.id : null,
           name: product.name,
           image: sku?.image || product.primary_image,
-          price: sku ? sku.price : product.price,
+          price: sku
+            ? parseFloat(sku.final_price || sku.discount_price || sku.price)
+            : parseFloat(
+                product.final_price ||
+                  product.discount_price ||
+                  product.price ||
+                  0
+              ),
           quantity: quantity,
           attributes: selectedAttrs,
           slug: product.slug, // For linking back
