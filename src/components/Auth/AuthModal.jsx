@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom";
 import { X, Mail, Lock, User, Phone, Loader2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -84,184 +85,223 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login" }) => {
     setLoading(false);
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative">
-        <button
+  return ReactDOM.createPortal(
+    <div
+      className="fixed inset-0 z-[99999] overflow-y-auto bg-black/60 backdrop-blur-md animate-fade-in"
+      style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
+    >
+      {/* 
+         z-[99999] and inline style ensure it's on top of EVERYTHING. 
+         Portal ensures it's attached to body, avoiding parent sticking/overflow issues. 
+      */}
+      <div className="min-h-screen px-4 text-center flex items-center justify-center">
+        {/* Overlay click to close */}
+        <div
+          className="fixed inset-0 transition-opacity"
+          aria-hidden="true"
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          <X className="w-6 h-6" />
-        </button>
+        ></div>
 
-        <div className="flex border-b border-gray-100">
+        {/* Modal Panel */}
+        <div className="inline-block w-full max-w-md p-0 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl relative z-10">
+          {/* Close Button */}
           <button
-            className={`flex-1 py-4 text-sm font-semibold transition-colors ${
-              activeTab === "login"
-                ? "text-lagoon-600 border-b-2 border-lagoon-600 bg-lagoon-50/50"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-            }`}
-            onClick={() => {
-              setActiveTab("login");
-              setError(null);
-            }}
+            onClick={onClose}
+            className="absolute top-4 right-4 z-20 p-2 text-gray-400 bg-white/50 hover:bg-white rounded-full hover:text-gray-900 transition-all"
           >
-            Login
+            <X className="w-5 h-5" />
           </button>
-          <button
-            className={`flex-1 py-4 text-sm font-semibold transition-colors ${
-              activeTab === "register"
-                ? "text-lagoon-600 border-b-2 border-lagoon-600 bg-lagoon-50/50"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-            }`}
-            onClick={() => {
-              setActiveTab("register");
-              setError(null);
-            }}
-          >
-            Register
-          </button>
-        </div>
 
-        <div className="p-8">
-          {error && (
-            <div className="mb-4 bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-100">
-              {error}
+          {/* Header Section with Tabs */}
+          <div className="relative bg-gray-50 pt-16 pb-6 px-8 text-center border-b border-gray-100">
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 w-16 h-1 bg-gray-200 rounded-full"></div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {activeTab === "login" ? "Welcome Back" : "Join Us"}
+            </h2>
+            <p className="text-sm text-gray-500 mb-8">
+              {activeTab === "login"
+                ? "Enter your details to access your account"
+                : "Create an account to start shopping"}
+            </p>
+
+            <div className="flex p-1 bg-gray-200/50 rounded-xl relative">
+              <button
+                className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-300 ${
+                  activeTab === "login"
+                    ? "bg-white text-lagoon-700 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+                onClick={() => {
+                  setActiveTab("login");
+                  setError(null);
+                }}
+              >
+                Sign In
+              </button>
+              <button
+                className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-300 ${
+                  activeTab === "register"
+                    ? "bg-white text-lagoon-700 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+                onClick={() => {
+                  setActiveTab("register");
+                  setError(null);
+                }}
+              >
+                Register
+              </button>
             </div>
-          )}
+          </div>
 
-          {activeTab === "login" ? (
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-gray-500">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    required
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg py-3 pl-10 px-4 outline-none focus:border-lagoon-500 transition-all"
-                    placeholder="Enter your email"
-                  />
-                </div>
+          <div className="p-8 bg-white">
+            {error && (
+              <div className="mb-6 bg-red-50 text-red-600 text-sm p-4 rounded-xl border border-red-100 flex items-start">
+                <span className="mr-2">⚠️</span>
+                {error}
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-gray-500">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="password"
-                    required
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg py-3 pl-10 px-4 outline-none focus:border-lagoon-500 transition-all"
-                    placeholder="Enter your password"
-                  />
+            )}
+
+            {activeTab === "login" ? (
+              <form onSubmit={handleLogin} className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">
+                    Email Address
+                  </label>
+                  <div className="relative group">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-lagoon-600 transition-colors" />
+                    <input
+                      type="email"
+                      required
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-lagoon-500 focus:bg-white focus:ring-4 focus:ring-lagoon-500/10 transition-all font-medium"
+                      placeholder="hello@example.com"
+                    />
+                  </div>
                 </div>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-lagoon-600 text-white font-bold py-3 rounded-lg hover:bg-lagoon-700 transition-all flex items-center justify-center"
-              >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  "Sign In"
-                )}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleRegister} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-gray-500">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    required
-                    value={registerName}
-                    onChange={(e) => setRegisterName(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg py-3 pl-10 px-4 outline-none focus:border-lagoon-500 transition-all"
-                    placeholder="Enter full name"
-                  />
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">
+                    Password
+                  </label>
+                  <div className="relative group">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-lagoon-600 transition-colors" />
+                    <input
+                      type="password"
+                      required
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-lagoon-500 focus:bg-white focus:ring-4 focus:ring-lagoon-500/10 transition-all font-medium"
+                      placeholder="••••••••"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-gray-500">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    required
-                    value={registerEmail}
-                    onChange={(e) => setRegisterEmail(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg py-3 pl-10 px-4 outline-none focus:border-lagoon-500 transition-all"
-                    placeholder="Enter email address"
-                  />
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-lagoon-600 text-white font-bold py-4 rounded-xl hover:bg-lagoon-700 active:scale-[0.98] transition-all shadow-lg shadow-lagoon-600/20 flex items-center justify-center"
+                  >
+                    {loading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      "Sign In"
+                    )}
+                  </button>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-gray-500">
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="tel"
-                    required
-                    maxLength={11}
-                    value={registerPhone}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      if (val.length <= 11) setRegisterPhone(val);
-                    }}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg py-3 pl-10 px-4 outline-none focus:border-lagoon-500 transition-all"
-                    placeholder="Enter phone number (11 digits)"
-                  />
+              </form>
+            ) : (
+              <form onSubmit={handleRegister} className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">
+                    Full Name
+                  </label>
+                  <div className="relative group">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-lagoon-600 transition-colors" />
+                    <input
+                      type="text"
+                      required
+                      value={registerName}
+                      onChange={(e) => setRegisterName(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-lagoon-500 focus:bg-white focus:ring-4 focus:ring-lagoon-500/10 transition-all font-medium"
+                      placeholder="John Doe"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-gray-500">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="password"
-                    required
-                    value={registerPassword}
-                    onChange={(e) => setRegisterPassword(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg py-3 pl-10 px-4 outline-none focus:border-lagoon-500 transition-all"
-                    placeholder="Create a password"
-                  />
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">
+                    Email Address
+                  </label>
+                  <div className="relative group">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-lagoon-600 transition-colors" />
+                    <input
+                      type="email"
+                      required
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-lagoon-500 focus:bg-white focus:ring-4 focus:ring-lagoon-500/10 transition-all font-medium"
+                      placeholder="hello@example.com"
+                    />
+                  </div>
                 </div>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-lagoon-600 text-white font-bold py-3 rounded-lg hover:bg-lagoon-700 transition-all flex items-center justify-center"
-              >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  "Create Account"
-                )}
-              </button>
-            </form>
-          )}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">
+                    Phone Number
+                  </label>
+                  <div className="relative group">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-lagoon-600 transition-colors" />
+                    <input
+                      type="tel"
+                      required
+                      maxLength={11}
+                      value={registerPhone}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "");
+                        if (val.length <= 11) setRegisterPhone(val);
+                      }}
+                      className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-lagoon-500 focus:bg-white focus:ring-4 focus:ring-lagoon-500/10 transition-all font-medium"
+                      placeholder="01XXXXXXXXX"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">
+                    Password
+                  </label>
+                  <div className="relative group">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-lagoon-600 transition-colors" />
+                    <input
+                      type="password"
+                      required
+                      value={registerPassword}
+                      onChange={(e) => setRegisterPassword(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-lagoon-500 focus:bg-white focus:ring-4 focus:ring-lagoon-500/10 transition-all font-medium"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-lagoon-600 text-white font-bold py-4 rounded-xl hover:bg-lagoon-700 active:scale-[0.98] transition-all shadow-lg shadow-lagoon-600/20 flex items-center justify-center"
+                  >
+                    {loading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      "Create Account"
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
