@@ -193,9 +193,9 @@ export const changePassword = async (passwordData) => {
 };
 
 // Shipping Address APIs
-export const fetchUserOrders = async (page = 1) => {
+export const fetchUserOrders = async (page = 1, limit = 10, search = "") => {
     try {
-        const response = await api.get(`/orders/users?page=${page}`);
+        const response = await api.get(`/orders/users?page=${page}&limit=${limit}&search=${search}`);
         return response.data;
     } catch (error) {
         throw error;

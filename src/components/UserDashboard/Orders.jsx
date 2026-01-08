@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import {
   Package,
   Loader2,
-  ChevronRight,
-  ArrowLeft,
   Calendar,
   Truck,
   CreditCard,
   ShoppingBag,
   Star,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  X,
+  ArrowLeft,
 } from "lucide-react";
 import { fetchUserOrders, fetchOrderDetails } from "../../services/api";
 import ReviewModal from "./ReviewModal";
@@ -19,6 +22,7 @@ const Orders = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Inline Order Details State
   const [activeOrder, setActiveOrder] = useState(null);
@@ -31,11 +35,11 @@ const Orders = () => {
     useState(null);
   const { user } = useAuth();
 
-  const loadOrders = async (page = 1) => {
+  const loadOrders = async (page = 1, search = searchQuery) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetchUserOrders(page);
+      const response = await fetchUserOrders(page, 3, search); // Limit 3 per page using search
       if (response.success) {
         setOrders(response.data);
         setPagination(response.pagination);
@@ -52,7 +56,17 @@ const Orders = () => {
 
   useEffect(() => {
     loadOrders();
-  }, []);
+  }, []); // Initial load
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    loadOrders(1, searchQuery);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    loadOrders(1, "");
+  };
 
   const viewOrderDetails = async (invoiceCode) => {
     setDetailsLoading(true);
@@ -328,10 +342,33 @@ const Orders = () => {
   // ORDER LIST VIEW
   return (
     <div className="animate-fade-in space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-        <Package className="w-6 h-6 text-lagoon-600" />
-        Order History
-      </h2>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <Package className="w-6 h-6 text-lagoon-600" />
+          Order History
+        </h2>
+
+        {/* Search Input */}
+        <form onSubmit={handleSearch} className="relative w-full md:w-64">
+          <input
+            type="text"
+            placeholder="Search by Invoice Code..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-lagoon-500/20 focus:border-lagoon-500 transition-all text-sm"
+          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={clearSearch}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </form>
+      </div>
 
       {loading ? (
         <div className="flex justify-center items-center py-12">
@@ -344,7 +381,19 @@ const Orders = () => {
       ) : orders.length === 0 ? (
         <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-xl border border-gray-100">
           <Package className="w-12 h-12 mx-auto mb-4 opacity-20" />
-          <p>No orders found.</p>
+          <p>
+            {searchQuery
+              ? "No orders found matching your search."
+              : "No orders found."}
+          </p>
+          {searchQuery && (
+            <button
+              onClick={clearSearch}
+              className="mt-4 px-4 py-2 bg-lagoon-50 text-lagoon-700 rounded-lg hover:bg-lagoon-100 transition-colors text-sm font-medium"
+            >
+              Clear Search
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
@@ -401,23 +450,46 @@ const Orders = () => {
 
           {/* Pagination */}
           {pagination && pagination.last_page > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-8">
+            <div className="flex justify-center items-center mt-8 gap-2">
               <button
                 onClick={() => loadOrders(pagination.current_page - 1)}
                 disabled={pagination.current_page === 1}
-                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 hover:bg-gray-50 disabled:hover:bg-white"
+                className={`p-2 rounded-lg border ${
+                  pagination.current_page === 1
+                    ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                    : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-lagoon-600"
+                } transition-colors`}
               >
-                Previous
+                <ChevronLeft className="w-5 h-5" />
               </button>
-              <span className="text-sm text-gray-600">
-                Page {pagination.current_page} of {pagination.last_page}
-              </span>
+
+              {Array.from(
+                { length: pagination.last_page },
+                (_, i) => i + 1
+              ).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => loadOrders(page)}
+                  className={`w-10 h-10 rounded-lg border font-medium transition-colors ${
+                    pagination.current_page === page
+                      ? "bg-lagoon-600 border-lagoon-600 text-white"
+                      : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-lagoon-600"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
               <button
                 onClick={() => loadOrders(pagination.current_page + 1)}
                 disabled={pagination.current_page === pagination.last_page}
-                className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 hover:bg-gray-50 disabled:hover:bg-white"
+                className={`p-2 rounded-lg border ${
+                  pagination.current_page === pagination.last_page
+                    ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                    : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-lagoon-600"
+                } transition-colors`}
               >
-                Next
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           )}
