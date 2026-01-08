@@ -311,4 +311,26 @@ export const fetchOrderInfo = async () => {
     }
 };
 
+// Coupon API
+export const checkCoupon = async (data) => {
+    try {
+        const response = await api.post("/check-coupon", data);
+        return response.data;
+    } catch (error) {
+        console.error("Check coupon error:", error);
+        throw error;
+    }
+};
+
+// Order API
+export const placeOrder = async (data) => {
+    try {
+        const response = await api.post("/orders/place-order", data);
+        return response.data;
+    } catch (error) {
+        console.error("Place order error:", error);
+        throw error;
+    }
+};
+
 export default api;

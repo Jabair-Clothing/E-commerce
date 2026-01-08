@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import { fetchOrderInfo } from "../services/api";
 import {
-  Loader2,
-  Truck,
-  CreditCard,
-  MapPin,
-  Calculator,
-  ShoppingBag,
-} from "lucide-react";
+  fetchOrderInfo,
+  checkCoupon,
+  placeOrder,
+  fetchShippingAddresses,
+} from "../services/api";
+import { Loader2, Calculator } from "lucide-react";
 
 import AuthModal from "../components/Auth/AuthModal";
+import OrderItems from "../components/Checkout/OrderItems";
+import ShippingAddress from "../components/Checkout/ShippingAddress";
+import ShippingMethod from "../components/Checkout/ShippingMethod";
+import PaymentMethod from "../components/Checkout/PaymentMethod";
+import OrderSummary from "../components/Checkout/OrderSummary";
 
 const Checkout = () => {
-  const { cartItems: cart, updateQuantity, removeFromCart } = useCart();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const {
+    cartItems: cart,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+  } = useCart();
+  const { isAuthenticated, loading: authLoading, user } = useAuth();
   const [orderInfo, setOrderInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,28 +32,47 @@ const Checkout = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState("login");
 
-  // Form State (Placeholder for now as focus is on costs)
+  // Checkout State
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState(null);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
+  const [shippingAddresses, setShippingAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [shippingMethod, setShippingMethod] = useState("inside"); // inside, outside, pickup
+
   const [paymentMethod, setPaymentMethod] = useState("cod"); // cod, bkash
+  const [paymentDetails, setPaymentDetails] = useState({ phone: "", trx: "" });
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   useEffect(() => {
-    const loadOrderInfo = async () => {
+    const loadData = async () => {
       try {
-        const response = await fetchOrderInfo();
-        if (response.success) {
-          setOrderInfo(response.data);
-        } else {
-          setError("Failed to load order information.");
+        const orderRes = await fetchOrderInfo();
+        if (orderRes.success) {
+          setOrderInfo(orderRes.data);
+        }
+
+        if (isAuthenticated) {
+          const addressRes = await fetchShippingAddresses();
+          if (addressRes.success) {
+            setShippingAddresses(addressRes.data);
+            // Auto-select first address if available
+            if (addressRes.data.length > 0) {
+              setSelectedAddressId(addressRes.data[0].id);
+            }
+          }
         }
       } catch (err) {
         console.error(err);
-        setError("An error occurred while loading order information.");
+        setError("An error occurred while loading checkout data.");
       } finally {
         setLoading(false);
       }
     };
-    loadOrderInfo();
-  }, []);
+    loadData();
+  }, [isAuthenticated]);
 
   // Calculations
   const calculateCosts = () => {
@@ -64,37 +91,132 @@ const Checkout = () => {
       else if (shippingMethod === "pickup") shippingCost = 0;
     }
 
-    // 3. VAT (Assuming percentage from "7.500")
-    // If vat is string "7.500", parseFloat gives 7.5
+    // 3. Discount (from Coupon)
+    const discount = appliedCoupon ? appliedCoupon.discount : 0;
+
+    // 4. VAT
     let vatAmount = 0;
     if (orderInfo) {
       const vatRate = parseFloat(orderInfo.vat || 0);
       vatAmount = (subtotal * vatRate) / 100;
     }
 
-    // Intermediate Total for Payment Charge Calc?
-    // Usually Payment Charge is on the Payable Amount.
-    const totalBeforePaymentCharge = subtotal + shippingCost + vatAmount;
+    // Intermediate Total
+    const totalBeforePaymentCharge =
+      subtotal + shippingCost + vatAmount - discount;
+    const payableBeforeCharge = Math.max(0, totalBeforePaymentCharge);
 
-    // 4. Payment Charge (bKash)
+    // 5. Payment Charge (bKash)
     let paymentCharge = 0;
-    if (paymentMethod === "bkash" && orderInfo) {
+    if (paymentMethod === "bkash" && orderInfo && payableBeforeCharge > 0) {
       const bkashRate = parseFloat(orderInfo.bkash_changed || 0);
-      paymentCharge = (totalBeforePaymentCharge * bkashRate) / 100;
+      paymentCharge = (payableBeforeCharge * bkashRate) / 100;
     }
 
-    const total = totalBeforePaymentCharge + paymentCharge;
+    const total = payableBeforeCharge + paymentCharge;
 
     return {
       subtotal,
       shippingCost,
       vatAmount,
+      discount,
       paymentCharge,
       total,
     };
   };
 
   const costs = calculateCosts();
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setIsApplyingCoupon(true);
+    setCouponError(null);
+
+    try {
+      // Prepare products array for API
+      const productsPayload = cart.map((item) => ({
+        product_id: item.productId,
+        quantity: item.quantity,
+      }));
+
+      const res = await checkCoupon({
+        coupon_code: couponCode,
+        total_amount: costs.subtotal, // API check usually against cart value
+        user_id: user?.id,
+        products: productsPayload,
+      });
+
+      if (res.success) {
+        setAppliedCoupon(res.data);
+        // Clear error if any
+        setCouponError(null);
+      } else {
+        setAppliedCoupon(null);
+        setCouponError(res.message);
+      }
+    } catch (err) {
+      setAppliedCoupon(null);
+      setCouponError(err.response?.data?.message || "Invalid coupon.");
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handlePlaceOrder = async () => {
+    if (!selectedAddressId && shippingMethod !== "pickup") {
+      alert("Please select a shipping address.");
+      return;
+    }
+    if (
+      paymentMethod === "bkash" &&
+      (!paymentDetails.phone || !paymentDetails.trx)
+    ) {
+      alert("Please provide bKash payment details (Phone & Transaction ID).");
+      return;
+    }
+
+    setIsPlacingOrder(true);
+
+    try {
+      const productsPayload = cart.map((item) => ({
+        product_id: item.productId,
+        product_sku_id: item.skuId || item.productId, // Fallback if simple product
+        quantity: item.quantity,
+      }));
+
+      const payload = {
+        user_id: user?.id,
+        coupon_id: appliedCoupon ? appliedCoupon.coupon_id : null,
+        shipping_id: selectedAddressId,
+        shipping_charge: costs.shippingCost,
+        product_subtotal: costs.subtotal,
+        total: costs.total,
+        payment_type: paymentMethod === "bkash" ? 2 : 1, // 1=COD, 2=bKash
+        trxed: paymentMethod === "bkash" ? paymentDetails.trx : null,
+        paymentphone: paymentMethod === "bkash" ? paymentDetails.phone : null,
+        products: productsPayload,
+      };
+
+      const res = await placeOrder(payload);
+
+      if (res.success) {
+        alert("Order placed successfully!");
+        clearCart();
+        // Navigate to confirm or dashboard
+        window.location.href = "/user/dashboard";
+      } else {
+        alert(res.message || "Failed to place order.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert(
+        err.response?.data?.message ||
+          "An error occurred while placing the order."
+      );
+    } finally {
+      setIsPlacingOrder(false);
+    }
+  };
 
   // Wait for auth check
   if (authLoading) {
@@ -183,208 +305,48 @@ const Checkout = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Options */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Order Items */}
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-lagoon-600" />
-              Order Items
-            </h2>
-            <div className="space-y-4">
-              {cart.map((item) => (
-                <div
-                  key={item.uniqueId}
-                  className="flex items-center gap-4 py-4 border-b border-gray-50 last:border-0"
-                >
-                  <img
-                    src={
-                      item.image ||
-                      "https://dummyimage.com/100x100/f3f4f6/9ca3af&text=No+Image"
-                    }
-                    alt={item.name}
-                    className="w-16 h-16 rounded-lg object-cover bg-gray-50"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{item.name}</h3>
-                    <div className="text-sm text-gray-500">
-                      Tk {item.price} x {item.quantity}
-                    </div>
-                  </div>
+          <ShippingAddress
+            shippingAddresses={shippingAddresses}
+            setShippingAddresses={setShippingAddresses}
+            selectedAddressId={selectedAddressId}
+            setSelectedAddressId={setSelectedAddressId}
+            user={user}
+          />
 
-                  {/* Quantity Controls */}
-                  <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1">
-                    <button
-                      onClick={() => {
-                        if (item.quantity > 1) {
-                          updateQuantity(item.uniqueId, item.quantity - 1);
-                        } else {
-                          if (confirm("Remove item from cart?")) {
-                            removeFromCart(item.uniqueId);
-                          }
-                        }
-                      }}
-                      className="w-8 h-8 flex items-center justify-center bg-white rounded-md shadow-sm text-gray-600 hover:text-lagoon-600 transition-colors"
-                    >
-                      -
-                    </button>
-                    <span className="font-semibold text-gray-900 w-4 text-center">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() =>
-                        updateQuantity(item.uniqueId, item.quantity + 1)
-                      }
-                      className="w-8 h-8 flex items-center justify-center bg-white rounded-md shadow-sm text-gray-600 hover:text-lagoon-600 transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
+          <OrderItems
+            cart={cart}
+            updateQuantity={updateQuantity}
+            removeFromCart={removeFromCart}
+          />
 
-                  <div className="font-bold text-gray-900 w-24 text-right">
-                    Tk {(item.price * item.quantity).toFixed(2)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ShippingMethod
+            shippingMethod={shippingMethod}
+            setShippingMethod={setShippingMethod}
+            orderInfo={orderInfo}
+          />
 
-          {/* Shipping Method */}
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <Truck className="w-5 h-5 text-lagoon-600" />
-              Shipping Method
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button
-                onClick={() => setShippingMethod("inside")}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
-                  shippingMethod === "inside"
-                    ? "border-lagoon-600 bg-lagoon-50"
-                    : "border-gray-100 hover:border-lagoon-200"
-                }`}
-              >
-                <div className="font-semibold text-gray-900">Inside Dhaka</div>
-                <div className="text-sm text-gray-500 mt-1">
-                  Tk {orderInfo.inside_dhaka}
-                </div>
-              </button>
-
-              <button
-                onClick={() => setShippingMethod("outside")}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
-                  shippingMethod === "outside"
-                    ? "border-lagoon-600 bg-lagoon-50"
-                    : "border-gray-100 hover:border-lagoon-200"
-                }`}
-              >
-                <div className="font-semibold text-gray-900">Outside Dhaka</div>
-                <div className="text-sm text-gray-500 mt-1">
-                  Tk {orderInfo.outside_dhaka}
-                </div>
-              </button>
-
-              <button
-                onClick={() => setShippingMethod("pickup")}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
-                  shippingMethod === "pickup"
-                    ? "border-lagoon-600 bg-lagoon-50"
-                    : "border-gray-100 hover:border-lagoon-200"
-                }`}
-              >
-                <div className="font-semibold text-gray-900">Shop Pickup</div>
-                <div className="text-sm text-gray-500 mt-1">Free</div>
-              </button>
-            </div>
-          </div>
-
-          {/* Payment Method */}
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-lagoon-600" />
-              Payment Method
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <button
-                onClick={() => setPaymentMethod("cod")}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
-                  paymentMethod === "cod"
-                    ? "border-lagoon-600 bg-lagoon-50"
-                    : "border-gray-100 hover:border-lagoon-200"
-                }`}
-              >
-                <div className="font-semibold text-gray-900">
-                  Cash on Delivery
-                </div>
-                <div className="text-sm text-gray-500 mt-1">
-                  Pay when you receive
-                </div>
-              </button>
-
-              <button
-                onClick={() => setPaymentMethod("bkash")}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
-                  paymentMethod === "bkash"
-                    ? "border-lagoon-600 bg-lagoon-50"
-                    : "border-gray-100 hover:border-lagoon-200"
-                }`}
-              >
-                <div className="font-semibold text-gray-900">bKash</div>
-                <div className="text-sm text-gray-500 mt-1">
-                  {orderInfo.bkash_changed}% Charge applies
-                </div>
-              </button>
-            </div>
-          </div>
+          <PaymentMethod
+            paymentMethod={paymentMethod}
+            setPaymentMethod={setPaymentMethod}
+            paymentDetails={paymentDetails}
+            setPaymentDetails={setPaymentDetails}
+            orderInfo={orderInfo}
+          />
         </div>
 
         {/* Right Column: Order Summary */}
-        <div className="lg:col-span-1">
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm sticky top-24">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">
-              Order Summary
-            </h2>
-            <div className="space-y-3 text-sm text-gray-600">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span className="font-medium text-gray-900">
-                  Tk {costs.subtotal.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Shipping</span>
-                <span className="font-medium text-gray-900">
-                  Tk {costs.shippingCost.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>VAT ({orderInfo.vat || 0}%)</span>
-                <span className="font-medium text-gray-900">
-                  Tk {costs.vatAmount.toFixed(2)}
-                </span>
-              </div>
-              {costs.paymentCharge > 0 && (
-                <div className="flex justify-between text-orange-600">
-                  <span>bKash Charge ({orderInfo.bkash_changed || 0}%)</span>
-                  <span className="font-medium">
-                    + Tk {costs.paymentCharge.toFixed(2)}
-                  </span>
-                </div>
-              )}
-              <div className="border-t pt-4 mt-4 flex justify-between items-center">
-                <span className="text-base font-bold text-gray-900">Total</span>
-                <span className="text-2xl font-bold text-lagoon-600">
-                  Tk {costs.total.toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => alert("Proceed to Payment logic here")}
-              className="w-full mt-8 bg-lagoon-600 text-white py-4 rounded-xl font-bold hover:bg-lagoon-700 transition-all shadow-lg shadow-lagoon-200"
-            >
-              Place Order
-            </button>
-          </div>
-        </div>
+        <OrderSummary
+          costs={costs}
+          orderInfo={orderInfo}
+          couponCode={couponCode}
+          setCouponCode={setCouponCode}
+          handleApplyCoupon={handleApplyCoupon}
+          appliedCoupon={appliedCoupon}
+          couponError={couponError}
+          isApplyingCoupon={isApplyingCoupon}
+          handlePlaceOrder={handlePlaceOrder}
+          isPlacingOrder={isPlacingOrder}
+        />
       </div>
     </div>
   );
