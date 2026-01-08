@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchProduct } from "../services/api";
+import {
+  fetchProduct,
+  fetchWishlist,
+  addToWishlist,
+  removeFromWishlist,
+} from "../services/api";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
-import { addToWishlist } from "../services/api";
 
 // Sub-components
 import ProductGallery from "../components/ProductDetails/ProductGallery";
@@ -20,6 +24,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isWishlist, setIsWishlist] = useState(false);
+  const [wishlistId, setWishlistId] = useState(null);
 
   // Dynamic Selection State
   const [selectedAttributes, setSelectedAttributes] = useState({});
@@ -78,6 +84,32 @@ const ProductDetails = () => {
               setSelectedAttributes(autoSelection);
             }
           }
+
+          // Check Wishlist Status
+          if (user) {
+            try {
+              const wishlistResponse = await fetchWishlist();
+              if (wishlistResponse.success) {
+                // Assuming response.data is an array of wishlist items
+                // Need to find if current product id matches any product_id in wishlist
+                const foundItem = wishlistResponse.data.find(
+                  (item) =>
+                    item.product_id === parseInt(id) ||
+                    item.product_id === productData.id // Ensure ID types match
+                );
+
+                if (foundItem) {
+                  setIsWishlist(true);
+                  setWishlistId(foundItem.wishlist_id);
+                } else {
+                  setIsWishlist(false);
+                  setWishlistId(null);
+                }
+              }
+            } catch (err) {
+              console.error("Failed to check wishlist status", err);
+            }
+          }
         } else {
           setError("Failed to load product details.");
         }
@@ -89,7 +121,7 @@ const ProductDetails = () => {
       }
     };
     loadProduct();
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     console.log("Product Data:", product);
@@ -197,22 +229,54 @@ const ProductDetails = () => {
 
   const handleAddToWishlist = async () => {
     if (!user) {
-      alert("Please login first to add to wishlist.");
+      alert("Please login first to manage wishlist.");
       return;
     }
+
     try {
-      const response = await addToWishlist({
-        user_id: user.id,
-        product_id: product.id,
-      });
-      if (response.success) {
-        alert("Product added to wishlist successfully!");
+      if (isWishlist) {
+        // Remove from Wishlist
+        if (!wishlistId) return; // Safety check
+        const response = await removeFromWishlist(wishlistId);
+        if (response.success) {
+          setIsWishlist(false);
+          setWishlistId(null);
+          alert("Removed from wishlist.");
+        } else {
+          alert(response.message || "Failed to remove from wishlist.");
+        }
       } else {
-        alert(response.message || "Failed to add to wishlist.");
+        // Add to Wishlist
+        const response = await addToWishlist({
+          user_id: user.id,
+          product_id: product.id,
+        });
+        if (response.success) {
+          setIsWishlist(true);
+          // Assuming response contains the new wishlist item or at least the id,
+          // but often basic add response might not return full object.
+          // We might need to refetch or assume a placeholder if API doesn't return ID.
+          // Let's check api.js: addToWishlist returns response.data.
+          // If backend follows REST, it usually returns created resource.
+          // For now, let's re-fetch wishlist or just toggle UI.
+          // To get the NEW wishlistId, we'd ideally get it from response.
+          // If response.data.data.wishlist_id exists... let's assume standard response for now.
+          // Or just re-fetch to be safe and simple.
+          const newWishlist = await fetchWishlist();
+          if (newWishlist.success) {
+            const found = newWishlist.data.find(
+              (item) => item.product_id === product.id
+            );
+            if (found) setWishlistId(found.wishlist_id);
+          }
+          alert("Product added to wishlist successfully!");
+        } else {
+          alert(response.message || "Failed to add to wishlist.");
+        }
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred while adding to wishlist.");
+      alert("An error occurred while updating wishlist.");
     }
   };
 
@@ -296,6 +360,7 @@ const ProductDetails = () => {
                 ? "Out of Stock"
                 : "Add to Cart"
             }
+            isWishlist={isWishlist}
           />
 
           <ProductDescription description={product.description} />

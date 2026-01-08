@@ -19,6 +19,7 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Header from "./components/Layout/Header";
 import Footer from "./components/Layout/Footer";
 import Contact from "./pages/Contact";
+import Checkout from "./pages/Checkout";
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/shop" element={<Shop />} />
+                    <Route path="/checkout" element={<Checkout />} />
                     <Route
                       path="/product/:id/:slug"
                       element={<ProductDetails />}

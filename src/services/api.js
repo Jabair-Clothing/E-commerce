@@ -301,4 +301,14 @@ export const submitRating = async (data) => {
     }
 };
 
+export const fetchOrderInfo = async () => {
+    try {
+        const response = await api.get("/orderinfo");
+        return response.data;
+    } catch (error) {
+        console.error("Fetch order info error:", error);
+        throw error;
+    }
+};
+
 export default api;

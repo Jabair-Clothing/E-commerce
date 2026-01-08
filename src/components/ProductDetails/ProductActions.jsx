@@ -1,7 +1,13 @@
 import React from "react";
 import { ShoppingBag, Heart, Share2 } from "lucide-react";
 
-const ProductActions = ({ onAddToCart, onAddToWishlist, disabled, label }) => {
+const ProductActions = ({
+  onAddToCart,
+  onAddToWishlist,
+  disabled,
+  label,
+  isWishlist,
+}) => {
   return (
     <div className="flex gap-4 mb-8">
       <button
@@ -14,9 +20,13 @@ const ProductActions = ({ onAddToCart, onAddToWishlist, disabled, label }) => {
       </button>
       <button
         onClick={onAddToWishlist}
-        className="p-4 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-red-500 transition-colors"
+        className={`p-4 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors ${
+          isWishlist
+            ? "text-red-500 bg-red-50 border-red-200"
+            : "text-gray-600 hover:text-red-500"
+        }`}
       >
-        <Heart className="w-6 h-6" />
+        <Heart className={`w-6 h-6 ${isWishlist ? "fill-current" : ""}`} />
       </button>
       <button className="p-4 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors">
         <Share2 className="w-6 h-6" />
