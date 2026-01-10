@@ -390,4 +390,14 @@ export const fetchTopSellingProducts = async (page = 1, limit = 10) => {
     }
 };
 
+export const fetchMostPopularProducts = async (page = 1, limit = 10) => {
+    try {
+        const response = await api.get(`/products/most-viewed?page=${page}&limit=${limit}`);
+        return response.data;
+    } catch (error) {
+        console.error("Fetch most popular products error:", error);
+        throw error;
+    }
+};
+
 export default api;

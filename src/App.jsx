@@ -12,6 +12,7 @@ import CategoryPage from "./pages/CategoryPage";
 import AllCategories from "./pages/AllCategories";
 import Shop from "./pages/Shop";
 import BestSelling from "./pages/BestSelling";
+import MostPopular from "./pages/MostPopular";
 import ProductDetails from "./pages/ProductDetails";
 import { CartProvider } from "./context/CartContext";
 import CartDrawer from "./components/Cart/CartDrawer";
@@ -42,6 +43,7 @@ const App = () => {
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/best-selling" element={<BestSelling />} />
+                    <Route path="/most-popular" element={<MostPopular />} />
                     <Route path="/categories" element={<AllCategories />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/about" element={<About />} />
