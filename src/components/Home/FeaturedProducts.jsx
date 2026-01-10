@@ -1,17 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { fetchFeaturedProducts } from "../../services/api";
+import { fetchTopSellingProducts } from "../../services/api";
 import ProductCard from "../UI/ProductCard";
+import { Link } from "react-router-dom";
+import ProductQuickView from "../UI/ProductQuickView";
+import { useCart } from "../../context/CartContext";
 
 const FeaturedProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const { addToCart, setIsCartOpen } = useCart();
 
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const response = await fetchFeaturedProducts();
-        if (response.success) {
-          setProducts(response.data);
+        const response = await fetchTopSellingProducts();
+        if (response.success && response.data && response.data.data) {
+          // Map API data to ProductCard props and limit to 4
+          const mappedProducts = response.data.data
+            .slice(0, 4)
+            .map((product) => ({
+              ...product,
+              image: product.primary_image, // Map primary_image to image
+            }));
+          setProducts(mappedProducts);
         }
       } catch (error) {
         console.error("Failed to load products", error);
@@ -21,6 +33,15 @@ const FeaturedProducts = () => {
     };
     loadProducts();
   }, []);
+
+  const handleAddToCart = (product) => {
+    addToCart({ ...product, image: product.primary_image || product.image });
+    setIsCartOpen(true);
+  };
+
+  const handleQuickView = (product) => {
+    setSelectedProduct(product);
+  };
 
   return (
     <section className="py-20 bg-white">
@@ -40,17 +61,33 @@ const FeaturedProducts = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={handleAddToCart}
+                onQuickView={handleQuickView}
+              />
             ))}
           </div>
         )}
 
         <div className="text-center mt-12">
-          <button className="px-8 py-3 border-2 border-lagoon-500 text-lagoon-600 font-semibold rounded-full hover:bg-lagoon-500 hover:text-white transition-all duration-300">
+          <Link
+            to="/best-selling"
+            className="inline-block px-8 py-3 border-2 border-lagoon-500 text-lagoon-600 font-semibold rounded-full hover:bg-lagoon-500 hover:text-white transition-all duration-300"
+          >
             View All Products
-          </button>
+          </Link>
         </div>
       </div>
+
+      {/* Quick View Modal */}
+      {selectedProduct && (
+        <ProductQuickView
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
     </section>
   );
 };

@@ -1,6 +1,6 @@
 const config = {
-    API_BASE_URL: "http://127.0.0.1:8000/api",
-    IMAGE_BASE_URL: "http://localhost/storage/",
+    API_BASE_URL: "https://backend.jabaibgroup.com/api",
+    IMAGE_BASE_URL: "https://backend.jabaibgroup.com/storage/",
 };
 
 export default config;

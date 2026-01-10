@@ -368,6 +368,7 @@ export const checkCoupon = async (data) => {
     }
 };
 
+
 // Order API
 export const placeOrder = async (data) => {
     try {
@@ -375,6 +376,16 @@ export const placeOrder = async (data) => {
         return response.data;
     } catch (error) {
         console.error("Place order error:", error);
+        throw error;
+    }
+};
+
+export const fetchTopSellingProducts = async (page = 1, limit = 10) => {
+    try {
+        const response = await api.get(`/products/top-selling?page=${page}&limit=${limit}`);
+        return response.data;
+    } catch (error) {
+        console.error("Fetch top selling products error:", error);
         throw error;
     }
 };

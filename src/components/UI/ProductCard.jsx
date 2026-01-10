@@ -1,27 +1,40 @@
 import React from "react";
 import { ShoppingCart, Eye } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onAddToCart, onQuickView }) => {
   return (
     <div className="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-        />
+        <Link to={`/product/${product.id}/${product.slug}`}>
+          <img
+            src={product.image || product.primary_image}
+            alt={product.name}
+            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+          />
+        </Link>
 
         {/* Overlay Actions */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-4">
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-4 pointer-events-none">
           <button
-            className="p-3 bg-white text-gray-800 rounded-full hover:bg-lagoon-500 hover:text-white transition-colors transform hover:scale-110 shadow-lg"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onAddToCart) onAddToCart(product);
+            }}
+            className="pointer-events-auto p-3 bg-white text-gray-800 rounded-full hover:bg-lagoon-500 hover:text-white transition-colors transform hover:scale-110 shadow-lg"
             title="Add to Cart"
           >
             <ShoppingCart className="w-5 h-5" />
           </button>
           <button
-            className="p-3 bg-white text-gray-800 rounded-full hover:bg-lagoon-500 hover:text-white transition-colors transform hover:scale-110 shadow-lg"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onQuickView) onQuickView(product);
+            }}
+            className="pointer-events-auto p-3 bg-white text-gray-800 rounded-full hover:bg-lagoon-500 hover:text-white transition-colors transform hover:scale-110 shadow-lg"
             title="Quick View"
           >
             <Eye className="w-5 h-5" />
@@ -46,9 +59,13 @@ const ProductCard = ({ product }) => {
 
       {/* Product Details */}
       <div className="p-4">
-        <p className="text-sm text-gray-500 mb-1">Category</p>
+        <p className="text-sm text-gray-500 mb-1">
+          {product.category?.name || "Category"}
+        </p>
         <h3 className="font-semibold text-gray-800 text-lg mb-2 truncate group-hover:text-lagoon-600 transition-colors">
-          {product.name}
+          <Link to={`/product/${product.id}/${product.slug}`}>
+            {product.name}
+          </Link>
         </h3>
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
