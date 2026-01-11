@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart, Search, Menu, X } from "lucide-react";
-import { useCart } from "../../context/CartContext";
+import { Search, Menu, X } from "lucide-react";
 
 import MegaMenu from "../Header/MegaMenu";
 import SearchBar from "../Header/SearchBar";
-import UserMenu from "../Header/UserMenu";
+
 import MobileMenu from "../Header/MobileMenu";
 import MobileSearch from "../Header/MobileSearch";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-  const { getCartCount, setIsCartOpen } = useCart();
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100">
@@ -22,7 +20,7 @@ const Header = () => {
           to="/"
           className="text-2xl font-bold text-lagoon-700 tracking-tight"
         >
-          NavClothing
+          JABAIBGROUP
         </Link>
 
         {/* Desktop Navigation */}
@@ -36,7 +34,7 @@ const Header = () => {
 
           <MegaMenu />
 
-          {["Shop", "About", "Returns", "Contact"].map((item) => (
+          {["Shop", "About", "Contact"].map((item) => (
             <Link
               key={item}
               to={`/${item.toLowerCase()}`}
@@ -59,21 +57,6 @@ const Header = () => {
           >
             <Search className="w-5 h-5" />
           </button>
-
-          <button
-            className="text-gray-600 hover:text-lagoon-600 transition-colors relative"
-            onClick={() => setIsCartOpen(true)}
-          >
-            <ShoppingCart className="w-5 h-5" />
-            {getCartCount() > 0 && (
-              <span className="absolute -top-2 -right-2 bg-lagoon-500 text-white text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {getCartCount()}
-              </span>
-            )}
-          </button>
-
-          {/* User Menu - Desktop */}
-          <UserMenu />
 
           {/* Mobile Menu Button */}
           <button

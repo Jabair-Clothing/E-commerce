@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Brand & Newsletter */}
           <div className="col-span-1 md:col-span-1">
             <h3 className="text-2xl font-bold text-lagoon-400 mb-4">
-              NavClothing
+              JABAIBGROUP
             </h3>
             <p className="text-gray-400 text-sm mb-6 leading-relaxed">
               Elevating your style with sustainable, modern fashion essentials.
@@ -86,14 +86,7 @@ const Footer = () => {
                   Customer Service
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/returns"
-                  className="hover:text-lagoon-300 transition-colors"
-                >
-                  Returns & Exchanges
-                </Link>
-              </li>
+
               <li>
                 <Link
                   to="/about"
@@ -139,12 +132,12 @@ const Footer = () => {
           <p>
             &copy; {new Date().getFullYear()}{" "}
             <a
-              href="https://napver.com/"
+              href="#"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-lagoon-500 transition-colors"
             >
-              Napver
+              JABAIBGROUP
             </a>
             . All rights reserved.
           </p>

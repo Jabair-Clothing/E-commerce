@@ -1,18 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import {
-  Loader2,
-  ShoppingBag,
-  Search,
-  X,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Loader2, Search, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchTopSellingProducts } from "../services/api";
-import { useCart } from "../context/CartContext";
 
 const BestSelling = () => {
-  const { addToCart, setIsCartOpen } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,18 +59,6 @@ const BestSelling = () => {
     if (newPage >= 1 && newPage <= pagination.last_page) {
       setSearchParams({ page: newPage });
     }
-  };
-
-  const handleAddToCart = (e, product) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Ensure product has 'image' property if Cart expects it, or use primary_image
-    // The Cart context likely handles it or we might need to adapt.
-    // Let's assume passed product object is stored.
-    // If Shop.jsx passes 'product' directly, and 'product' has 'primary_image', we should check Cart implementation if needed.
-    // But for now, I'll pass it as is, maybe adding 'image' alias if needed.
-    addToCart({ ...product, image: product.primary_image });
-    setIsCartOpen(true);
   };
 
   return (
@@ -153,12 +132,6 @@ const BestSelling = () => {
                         <span className="text-xl font-bold text-gray-900">
                           Tk {product.price}
                         </span>
-                        <button
-                          onClick={(e) => handleAddToCart(e, product)}
-                          className="p-2 rounded-full bg-gray-50 hover:bg-lagoon-100 text-gray-600 hover:text-lagoon-600 transition-colors"
-                        >
-                          <ShoppingBag className="w-5 h-5" />
-                        </button>
                       </div>
                     </div>
                   </div>

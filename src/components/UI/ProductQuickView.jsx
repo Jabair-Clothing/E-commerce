@@ -1,20 +1,9 @@
 import React from "react";
-import { X, ShoppingBag } from "lucide-react";
+import { X } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useCart } from "../../context/CartContext";
 
 const ProductQuickView = ({ product, onClose }) => {
-  const { addToCart, setIsCartOpen } = useCart();
-
   if (!product) return null;
-
-  const handleAddToCart = () => {
-    // Add to cart with default options if any, or just the product
-    // Assuming addToCart handles product structure
-    addToCart({ ...product, image: product.image || product.primary_image });
-    setIsCartOpen(true);
-    onClose();
-  };
 
   const discountPercentage =
     product.discount_price &&
@@ -106,13 +95,6 @@ const ProductQuickView = ({ product, onClose }) => {
           </div>
 
           <div className="mt-auto space-y-4">
-            <button
-              onClick={handleAddToCart}
-              className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold hover:bg-gray-800 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
-            >
-              <ShoppingBag className="w-5 h-5" />
-              Add to Cart
-            </button>
             <Link
               to={`/product/${product.id}/${product.slug || "product"}`}
               className="block w-full text-center py-4 rounded-xl font-bold border-2 border-gray-100 text-gray-900 hover:border-gray-900 transition-colors"

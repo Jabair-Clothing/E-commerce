@@ -1,36 +1,19 @@
 import React, { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  ChevronDown,
-  Loader2,
-  LayoutDashboard,
-  LogOut,
-  User,
-} from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { useCategories } from "../../context/CategoryContext";
 import { fetchParentCategory } from "../../services/api";
-import AuthModal from "../Auth/AuthModal";
 
 const MobileMenu = ({ isOpen, onClose }) => {
-  const { user, logout, isAuthenticated } = useAuth();
   const { parentCategories } = useCategories();
   const [mobileCategoriesExpanded, setMobileCategoriesExpanded] =
     useState(false);
   const [mobileActiveCategory, setMobileActiveCategory] = useState(null);
   const [activeCategoryData, setActiveCategoryData] = useState(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Cache for fetched details
   const categoryCache = useRef({});
-
-  const handleLogout = () => {
-    logout();
-    onClose();
-    // navigate("/"); // Parent handles navigation usually, or we can use hook here if needed
-    window.location.href = "/";
-  };
 
   const handleCategoryExpand = async (category) => {
     if (mobileActiveCategory === category.id) {
@@ -66,7 +49,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
     <>
       <div className="md:hidden bg-white border-t border-gray-100 py-4 px-4 shadow-lg absolute w-full left-0 animate-fade-in-down h-[calc(100vh-80px)] overflow-y-auto z-40">
         <div className="flex flex-col space-y-4">
-          {["Home", "Shop", "About", "Returns", "Contact"].map((item) => (
+          {["Home", "Shop", "About", "Contact"].map((item) => (
             <Link
               key={item}
               to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
@@ -148,51 +131,8 @@ const MobileMenu = ({ isOpen, onClose }) => {
               </div>
             )}
           </div>
-          <div className="pt-4 border-t border-gray-100 pb-8">
-            {isAuthenticated ? (
-              <>
-                <div className="flex items-center text-gray-900 font-bold mb-4">
-                  <div className="w-8 h-8 rounded-full bg-lagoon-100 flex items-center justify-center text-lagoon-700 font-bold text-xs mr-3">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
-                  {user.name}
-                </div>
-                <Link
-                  to="/user/dashboard"
-                  onClick={onClose}
-                  className="flex items-center text-gray-600 hover:text-lagoon-600 mb-3"
-                >
-                  <LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center text-red-500 hover:text-red-700 w-full text-left"
-                >
-                  <LogOut className="w-5 h-5 mr-3" /> Logout
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => {
-                  // onClose(); // Dont close menu, just open modal? Or close menu?
-                  // UX: Close menu so modal is visible clearly
-                  // But we need to pass open state to local modal or use global?
-                  // The header uses local modal. MobileMenu needs its own or prop.
-                  // Let's use local state here.
-                  setIsAuthModalOpen(true);
-                }}
-                className="flex items-center text-gray-600 hover:text-lagoon-600 mb-3"
-              >
-                <User className="w-5 h-5 mr-3" /> Login / Register
-              </button>
-            )}
-          </div>
         </div>
       </div>
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
     </>
   );
 };

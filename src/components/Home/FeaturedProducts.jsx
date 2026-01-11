@@ -3,13 +3,11 @@ import { fetchTopSellingProducts } from "../../services/api";
 import ProductCard from "../UI/ProductCard";
 import { Link } from "react-router-dom";
 import ProductQuickView from "../UI/ProductQuickView";
-import { useCart } from "../../context/CartContext";
 
 const FeaturedProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const { addToCart, setIsCartOpen } = useCart();
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -33,11 +31,6 @@ const FeaturedProducts = () => {
     };
     loadProducts();
   }, []);
-
-  const handleAddToCart = (product) => {
-    addToCart({ ...product, image: product.primary_image || product.image });
-    setIsCartOpen(true);
-  };
 
   const handleQuickView = (product) => {
     setSelectedProduct(product);
@@ -64,7 +57,6 @@ const FeaturedProducts = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                onAddToCart={handleAddToCart}
                 onQuickView={handleQuickView}
               />
             ))}

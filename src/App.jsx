@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MainLayout from "./components/Layout/MainLayout";
 import Home from "./pages/Home";
 import { CategoryProvider } from "./context/CategoryContext";
@@ -14,72 +9,42 @@ import Shop from "./pages/Shop";
 import BestSelling from "./pages/BestSelling";
 import MostPopular from "./pages/MostPopular";
 import ProductDetails from "./pages/ProductDetails";
-import { CartProvider } from "./context/CartContext";
-import CartDrawer from "./components/Cart/CartDrawer";
-import { AuthProvider } from "./context/AuthContext";
-import UserDashboard from "./pages/UserDashboard";
-import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Header from "./components/Layout/Header";
 import Footer from "./components/Layout/Footer";
 import Contact from "./pages/Contact";
-import Checkout from "./pages/Checkout";
 import About from "./pages/About";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
-import Returns from "./pages/Returns";
 
 const App = () => {
   return (
     <Router>
-      <CartProvider>
-        <CategoryProvider>
-          <AuthProvider>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <div className="flex-grow">
-                <main>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/shop" element={<Shop />} />
-                    <Route path="/best-selling" element={<BestSelling />} />
-                    <Route path="/most-popular" element={<MostPopular />} />
-                    <Route path="/categories" element={<AllCategories />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="/returns" element={<Returns />} />
-                    <Route
-                      path="/product/:id/:slug"
-                      element={<ProductDetails />}
-                    />
-                    <Route path="/category/:slug" element={<CategoryPage />}>
-                      <Route path=":subSlug" element={<CategoryPage />} />
-                    </Route>
-                    {/* User Routes */}
-                    <Route
-                      path="/user/dashboard"
-                      element={
-                        <ProtectedRoute>
-                          <UserDashboard />
-                        </ProtectedRoute>
-                      }
-                    />
-                    {/* Redirect /account to /user/dashboard for now */}
-                    <Route
-                      path="/account"
-                      element={<Navigate to="/user/dashboard" replace />}
-                    />
-                  </Routes>
-                </main>
-              </div>
-              <Footer />
-            </div>
-            <CartDrawer />
-          </AuthProvider>
-        </CategoryProvider>
-      </CartProvider>
+      <CategoryProvider>
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <div className="flex-grow">
+            <main>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/best-selling" element={<BestSelling />} />
+                <Route path="/most-popular" element={<MostPopular />} />
+                <Route path="/categories" element={<AllCategories />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<Terms />} />
+
+                <Route path="/product/:id/:slug" element={<ProductDetails />} />
+                <Route path="/category/:slug" element={<CategoryPage />}>
+                  <Route path=":subSlug" element={<CategoryPage />} />
+                </Route>
+              </Routes>
+            </main>
+          </div>
+          <Footer />
+        </div>
+      </CategoryProvider>
     </Router>
   );
 };

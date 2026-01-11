@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Loader2,
-  ShoppingBag,
   Search,
   X,
   ChevronRight,
@@ -17,10 +16,7 @@ import {
   recordParentCategoryView,
 } from "../services/api";
 
-import { useCart } from "../context/CartContext";
-
 const Shop = () => {
-  const { addToCart, setIsCartOpen } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -251,13 +247,6 @@ const Shop = () => {
     setSearchParams({});
   };
 
-  const handleAddToCart = (e, product) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addToCart(product);
-    setIsCartOpen(true);
-  };
-
   return (
     <div className="container mx-auto px-4 py-8 animate-fade-in">
       {/* Top Bar: Title & Mobile Filter Toggle (Future) */}
@@ -456,12 +445,6 @@ const Shop = () => {
                         <span className="text-xl font-bold text-gray-900">
                           Tk {product.price}
                         </span>
-                        <button
-                          onClick={(e) => handleAddToCart(e, product)}
-                          className="p-2 rounded-full bg-gray-50 hover:bg-lagoon-100 text-gray-600 hover:text-lagoon-600 transition-colors"
-                        >
-                          <ShoppingBag className="w-5 h-5" />
-                        </button>
                       </div>
                     </div>
                   </div>

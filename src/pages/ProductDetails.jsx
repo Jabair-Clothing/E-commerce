@@ -1,32 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  fetchProduct,
-  fetchWishlist,
-  addToWishlist,
-  removeFromWishlist,
-  recordProductView,
-} from "../services/api";
+import { fetchProduct, recordProductView } from "../services/api";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
-import { useCart } from "../context/CartContext";
 
 // Sub-components
 import ProductGallery from "../components/ProductDetails/ProductGallery";
 import ProductInfo from "../components/ProductDetails/ProductInfo";
 import ProductSelectors from "../components/ProductDetails/ProductSelectors";
-import ProductActions from "../components/ProductDetails/ProductActions";
 import ProductDescription from "../components/ProductDetails/ProductDescription";
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const { user } = useAuth();
-  const { addToCart, setIsCartOpen } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isWishlist, setIsWishlist] = useState(false);
-  const [wishlistId, setWishlistId] = useState(null);
 
   // Dynamic Selection State
   const [selectedAttributes, setSelectedAttributes] = useState({});
@@ -92,32 +79,6 @@ const ProductDetails = () => {
               setSelectedAttributes(autoSelection);
             }
           }
-
-          // Check Wishlist Status
-          if (user) {
-            try {
-              const wishlistResponse = await fetchWishlist();
-              if (wishlistResponse.success) {
-                // Assuming response.data is an array of wishlist items
-                // Need to find if current product id matches any product_id in wishlist
-                const foundItem = wishlistResponse.data.find(
-                  (item) =>
-                    item.product_id === parseInt(id) ||
-                    item.product_id === productData.id // Ensure ID types match
-                );
-
-                if (foundItem) {
-                  setIsWishlist(true);
-                  setWishlistId(foundItem.wishlist_id);
-                } else {
-                  setIsWishlist(false);
-                  setWishlistId(null);
-                }
-              }
-            } catch (err) {
-              console.error("Failed to check wishlist status", err);
-            }
-          }
         } else {
           setError("Failed to load product details.");
         }
@@ -129,7 +90,7 @@ const ProductDetails = () => {
       }
     };
     loadProduct();
-  }, [id, user]);
+  }, [id]);
 
   useEffect(() => {
     console.log("Product Data:", product);
@@ -142,11 +103,6 @@ const ProductDetails = () => {
     if (!product || !product.skus) return;
 
     // Try to find a matching SKU based on currently selected attributes
-    // A match exists if every selected attribute key matches the sku's attribute value
-    // We only update if a *complete* set of attributes is selected, OR we can try to do partials?
-    // For E-commerce, usually we wait for full selection to define a SKU, but can update image on partial (e.g. Color).
-
-    // Check if product requires attributes
     const hasAttributes = Object.keys(availableAttributes).length > 0;
 
     // If product has SKUs but no attributes (e.g. simple product), auto-select first SKU
@@ -162,15 +118,11 @@ const ProductDetails = () => {
     // Only attempt match if we have selections
     if (selectedKeys.length > 0) {
       // 1. Update Display Image based on Color selection immediately if available
-      // Assumes 'Color' is the key name from backend api
       if (selectedAttributes["Color"]) {
-        // Find the value image for this color
         const colorAttrList = availableAttributes["Color"];
         const selectedColor = colorAttrList?.find(
           (c) => c.name === selectedAttributes["Color"]
         );
-        // Note: API returns user variant image inside attributes too, or we can look at the sku...
-        // Let's use the first SKU that matches this color to get an image
         const matchingSkuForImage = product.skus.find((s) =>
           s.attributes.some(
             (a) =>
@@ -179,7 +131,6 @@ const ProductDetails = () => {
           )
         );
 
-        // If that SKU has a specific image, use it.
         if (matchingSkuForImage && matchingSkuForImage.image) {
           setDisplayImage(matchingSkuForImage.image);
         } else if (selectedColor && selectedColor.image_url) {
@@ -189,15 +140,12 @@ const ProductDetails = () => {
 
       // 2. Find Exact SKU Match
       const match = product.skus.find((sku) => {
-        // Check if this SKU has every selected attribute
         return selectedKeys.every((key) => {
           const detail = sku.attributes.find((a) => a.attribute_name === key);
           return detail && detail.value_name === selectedAttributes[key];
         });
       });
 
-      // If we found a match AND the number of selected attributes equals the required attributes for a SKU
-      // (Assuming all SKUs have same number of attributes? Usually yes)
       const requiredAttrCount = product.skus[0]?.attributes.length || 0;
 
       if (match && selectedKeys.length === requiredAttrCount) {
@@ -208,9 +156,6 @@ const ProductDetails = () => {
         if (match.image) setDisplayImage(match.image);
       } else {
         setActiveSku(null);
-        // Reset Price to base if selection is partial/invalid? Or keep last known?
-        // Keeping base price might be confusing if variants are expensive.
-        // Let's keep it simple: if full match, show specific price. Else base.
         if (selectedKeys.length !== requiredAttrCount) {
           setDisplayPrice(
             product.discount_price || product.final_price || product.price
@@ -227,79 +172,12 @@ const ProductDetails = () => {
     }));
   };
 
-  const handleAddToCart = () => {
-    if (product.skus && product.skus.length > 0 && !activeSku) {
-      const missingOptions = Object.keys(availableAttributes).join(", ");
-      alert(
-        `Please select all options (${missingOptions}) before adding to cart.`
-      );
-      return;
-    }
-    addToCart(product, activeSku, 1, selectedAttributes);
-    setIsCartOpen(true);
-  };
-
-  const handleAddToWishlist = async () => {
-    if (!user) {
-      alert("Please login first to manage wishlist.");
-      return;
-    }
-
-    try {
-      if (isWishlist) {
-        // Remove from Wishlist
-        if (!wishlistId) return; // Safety check
-        const response = await removeFromWishlist(wishlistId);
-        if (response.success) {
-          setIsWishlist(false);
-          setWishlistId(null);
-          alert("Removed from wishlist.");
-        } else {
-          alert(response.message || "Failed to remove from wishlist.");
-        }
-      } else {
-        // Add to Wishlist
-        const response = await addToWishlist({
-          user_id: user.id,
-          product_id: product.id,
-        });
-        if (response.success) {
-          setIsWishlist(true);
-          // Assuming response contains the new wishlist item or at least the id,
-          // but often basic add response might not return full object.
-          // We might need to refetch or assume a placeholder if API doesn't return ID.
-          // Let's check api.js: addToWishlist returns response.data.
-          // If backend follows REST, it usually returns created resource.
-          // For now, let's re-fetch wishlist or just toggle UI.
-          // To get the NEW wishlistId, we'd ideally get it from response.
-          // If response.data.data.wishlist_id exists... let's assume standard response for now.
-          // Or just re-fetch to be safe and simple.
-          const newWishlist = await fetchWishlist();
-          if (newWishlist.success) {
-            const found = newWishlist.data.find(
-              (item) => item.product_id === product.id
-            );
-            if (found) setWishlistId(found.wishlist_id);
-          }
-          alert("Product added to wishlist successfully!");
-        } else {
-          alert(response.message || "Failed to add to wishlist.");
-        }
-      }
-    } catch (err) {
-      console.error(err);
-      alert("An error occurred while updating wishlist.");
-    }
-  };
-
   const checkAvailability = (attrName, attrValue) => {
     if (!product || !product.skus) return false;
 
-    // Create a temporary selection including existing selections minus the current attribute category
     const relevantSelections = { ...selectedAttributes };
     delete relevantSelections[attrName];
 
-    // Check if any SKU matches the relevant selections AND this specific attribute value AND has stock > 0
     return product.skus.some((sku) => {
       const matchRelevant = Object.entries(relevantSelections).every(
         ([key, val]) => {
@@ -357,22 +235,6 @@ const ProductDetails = () => {
             selectedAttributes={selectedAttributes}
             onSelect={handleAttributeSelect}
             checkAvailability={checkAvailability}
-          />
-
-          <ProductActions
-            onAddToCart={handleAddToCart}
-            onAddToWishlist={handleAddToWishlist}
-            disabled={
-              product.stock_quantity === 0 ||
-              (activeSku && activeSku.quantity === 0)
-            }
-            label={
-              product.stock_quantity === 0 ||
-              (activeSku && activeSku.quantity === 0)
-                ? "Out of Stock"
-                : "Add to Cart"
-            }
-            isWishlist={isWishlist}
           />
 
           <ProductDescription description={product.description} />

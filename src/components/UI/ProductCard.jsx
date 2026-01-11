@@ -1,8 +1,8 @@
 import React from "react";
-import { ShoppingCart, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const ProductCard = ({ product, onAddToCart, onQuickView }) => {
+const ProductCard = ({ product, onQuickView }) => {
   return (
     <div className="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
       {/* Image Container */}
@@ -17,17 +17,6 @@ const ProductCard = ({ product, onAddToCart, onQuickView }) => {
 
         {/* Overlay Actions */}
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-4 pointer-events-none">
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (onAddToCart) onAddToCart(product);
-            }}
-            className="pointer-events-auto p-3 bg-white text-gray-800 rounded-full hover:bg-lagoon-500 hover:text-white transition-colors transform hover:scale-110 shadow-lg"
-            title="Add to Cart"
-          >
-            <ShoppingCart className="w-5 h-5" />
-          </button>
           <button
             onClick={(e) => {
               e.preventDefault();
