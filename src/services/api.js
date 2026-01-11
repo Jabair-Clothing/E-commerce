@@ -166,7 +166,14 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
+        // Check if the request is for a tracking endpoint
+        const isTrackingRequest = error.config && (
+            error.config.url.includes("/products/view") ||
+            error.config.url.includes("/categories/parents/view") ||
+            error.config.url.includes("/categories/view")
+        );
+
+        if (error.response && error.response.status === 401 && !isTrackingRequest) {
             // Token expired or invalid
             localStorage.removeItem("authToken");
             // Optional: You might want to remove user data too if stored in local storage
