@@ -22,7 +22,7 @@ const Header = () => {
           to="/"
           className="text-2xl font-bold text-lagoon-700 tracking-tight"
         >
-          jabaibgroup
+          NavClothing
         </Link>
 
         {/* Desktop Navigation */}

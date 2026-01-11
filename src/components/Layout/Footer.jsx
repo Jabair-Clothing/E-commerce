@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Brand & Newsletter */}
           <div className="col-span-1 md:col-span-1">
             <h3 className="text-2xl font-bold text-lagoon-400 mb-4">
-              jabaibgroup
+              NavClothing
             </h3>
             <p className="text-gray-400 text-sm mb-6 leading-relaxed">
               Elevating your style with sustainable, modern fashion essentials.
