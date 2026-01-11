@@ -64,24 +64,24 @@ const MegaMenu = () => {
 
   return (
     <div className="relative group">
-      <button className="flex items-center text-gray-600 hover:text-lagoon-600 font-medium transition-colors py-4">
-        Categories
-        <ChevronDown className="w-4 h-4 ml-1" />
+      <button className="flex items-center text-xs font-bold text-gray-500 hover:text-accent-600 uppercase tracking-[0.2em] transition-colors py-4">
+        Collections
+        <ChevronDown className="w-3 h-3 ml-1" />
       </button>
 
-      <div className="absolute left-0 top-full w-[800px] bg-white border border-gray-100 shadow-xl rounded-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50 overflow-hidden">
-        <div className="flex h-[400px]">
+      <div className="absolute left-1/2 -translate-x-1/2 top-full w-[900px] bg-primary-50 border border-gray-100 shadow-2xl rounded-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50 overflow-hidden mt-6">
+        <div className="flex h-[450px]">
           {/* Sidebar: Parent Categories */}
-          <div className="w-1/4 bg-gray-50 py-4 overflow-y-auto">
+          <div className="w-1/4 bg-white py-6 overflow-y-auto border-r border-gray-100">
             {!loading &&
               parentCategories.map((category) => (
                 <div
                   key={category.id}
                   onMouseEnter={() => handleCategoryHover(category)}
-                  className={`px-6 py-3 cursor-pointer text-sm font-medium transition-colors flex items-center justify-between ${
+                  className={`px-8 py-3 cursor-pointer text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-between ${
                     activeCategory?.id === category.id
-                      ? "bg-white text-lagoon-600 border-l-4 border-lagoon-600 shadow-sm"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-lagoon-600"
+                      ? "text-accent-600 bg-gray-50 border-r-2 border-accent-600"
+                      : "text-primary-600 hover:text-accent-600 hover:bg-gray-50"
                   }`}
                 >
                   {category.name}

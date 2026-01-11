@@ -37,15 +37,15 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-24 bg-primary-50">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Featured Collection
+        <div className="text-center mb-20 px-4">
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-primary-900 mb-6">
+            Featured Products
           </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto">
-            Handpicked styles for the modern wardrobe. Quality, sustainability,
-            and comfort in every piece.
+          <p className="text-gray-500 max-w-2xl mx-auto text-lg leading-relaxed font-light">
+            Exquisite craftsmanship meets modern design. Explore our latest
+            manufacturing highlights tailored for global markets.
           </p>
         </div>
 
@@ -65,10 +65,10 @@ const FeaturedProducts = () => {
 
         <div className="text-center mt-12">
           <Link
-            to="/best-selling"
-            className="inline-block px-8 py-3 border-2 border-lagoon-500 text-lagoon-600 font-semibold rounded-full hover:bg-lagoon-500 hover:text-white transition-all duration-300"
+            to="/shop"
+            className="inline-block px-10 py-4 border border-primary-900 text-primary-900 font-bold uppercase tracking-[0.2em] hover:bg-primary-900 hover:text-white transition-all duration-300"
           >
-            View All Products
+            View Full Catalog
           </Link>
         </div>
       </div>

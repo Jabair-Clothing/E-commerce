@@ -3,105 +3,103 @@ import { Mail, MapPin, Phone } from "lucide-react";
 
 const About = () => {
   return (
-    <div className="bg-white">
+    <div className="bg-white animate-fade-in">
       {/* Hero Section */}
-      <div className="relative bg-lagoon-900 text-white py-20 px-4">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            About Our Brand
+      <div className="relative bg-black text-white py-24 px-4 overflow-hidden">
+        <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=2074&auto=format&fit=crop')] bg-cover bg-center mix-blend-overlay"></div>
+        <div className="container mx-auto max-w-4xl text-center relative z-10">
+          <span className="text-accent-500 font-bold tracking-[0.2em] uppercase text-xs mb-4 block">
+            Since 2026
+          </span>
+          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-8 leading-tight">
+            The Art of <span className="text-accent-500 italic">Fabric.</span>
           </h1>
-          <p className="text-lg text-lagoon-100 max-w-2xl mx-auto">
-            We are redefining fashion in Bangladesh with premium quality,
-            sustainable practices, and designs that speak to your soul.
+          <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
+            Redefining fashion manufacturing with uncompromising quality,
+            sustainable practices, and a legacy of excellence.
           </p>
         </div>
       </div>
-
-      {/* Our Story */}
-      <div className="container mx-auto px-4 py-16 max-w-6xl">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <img
-              src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=1000"
-              alt="Our Story"
-              className="rounded-2xl shadow-xl w-full h-[500px] object-cover"
-            />
+      ...
+      <div className="space-y-8">
+        <h2 className="text-4xl font-serif font-bold text-black">
+          Our Heritage
+        </h2>
+        <div className="w-20 h-1 bg-accent-500"></div>
+        <p className="text-gray-600 leading-relaxed text-lg font-light">
+          Founded in the heart of Dhaka, JABAIBGROUP began with a singular
+          vision: to bridge the gap between world-class manufacturing and
+          sustainable fashion. What started as a modest workshop has evolved
+          into a powerhouse of garment production.
+        </p>
+        <p className="text-gray-600 leading-relaxed text-lg font-light">
+          We believe that true luxury lies in the details. From the selection of
+          the finest raw cotton to the final stitch, our process is governed by
+          a relentless pursuit of perfection.
+        </p>
+        <div className="grid grid-cols-2 gap-8 pt-6">
+          <div className="p-6 bg-gray-50 border border-gray-100 text-center group hover:border-accent-200 transition-colors">
+            <h3 className="font-serif font-bold text-4xl text-black mb-2 group-hover:text-accent-600 transition-colors">
+              50k+
+            </h3>
+            <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Products Exported
+            </p>
           </div>
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-gray-800">Our Story</h2>
-            <p className="text-gray-600 leading-relaxed">
-              Founded in the heart of Dhaka, our journey began with a simple
-              vision: to make premium fashion accessible to everyone in
-              Bangladesh. We noticed a gap in the market for high-quality,
-              trendy clothing that doesn't break the bank.
+          <div className="p-6 bg-gray-50 border border-gray-100 text-center group hover:border-accent-200 transition-colors">
+            <h3 className="font-serif font-bold text-4xl text-black mb-2 group-hover:text-accent-600 transition-colors">
+              100%
+            </h3>
+            <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Sustainable
             </p>
-            <p className="text-gray-600 leading-relaxed">
-              Today, we are proud to serve thousands of customers across the
-              country. Our commitment to quality means every piece of fabric is
-              carefully selected, and every stitch is inspected to ensure it
-              meets our high standards.
-            </p>
-            <div className="grid grid-cols-2 gap-6 pt-4">
-              <div className="p-4 bg-lagoon-50 rounded-xl">
-                <h3 className="font-bold text-2xl text-lagoon-600 mb-1">
-                  50k+
-                </h3>
-                <p className="text-sm text-gray-600">Happy Customers</p>
-              </div>
-              <div className="p-4 bg-lagoon-50 rounded-xl">
-                <h3 className="font-bold text-2xl text-lagoon-600 mb-1">
-                  100%
-                </h3>
-                <p className="text-sm text-gray-600">Authentic Products</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
-
+      ...
       {/* Values */}
-      <div className="bg-gray-50 py-16 px-4">
+      <div className="bg-gray-50 py-24 px-4">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
-            Why Choose Us?
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-lagoon-100 rounded-full flex items-center justify-center text-lagoon-600 mb-4">
-                <MapPin className="w-6 h-6" />
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-black mb-4">
+              Our Core Values
+            </h2>
+            <div className="w-12 h-1 bg-accent-500 mx-auto"></div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-10">
+            {[
+              {
+                icon: MapPin,
+                title: "Global Reach",
+                desc: "Delivering excellence from our facilities to brands across the globe with seamless logistics.",
+              },
+              {
+                icon: Phone,
+                title: "Premium Support",
+                desc: "Dedicated B2B account managers available 24/7 to ensure your production needs are met.",
+              },
+              {
+                icon: Mail,
+                title: "Transparent Process",
+                desc: "Complete visibility into the manufacturing/supply chain for your peace of mind.",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="bg-white p-10 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group"
+              >
+                <div className="w-14 h-14 bg-black text-white rounded-none flex items-center justify-center mb-6 group-hover:bg-accent-600 transition-colors">
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-black mb-4 uppercase tracking-wide">
+                  {item.title}
+                </h3>
+                <p className="text-gray-500 leading-relaxed font-light">
+                  {item.desc}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">
-                Nationwide Delivery
-              </h3>
-              <p className="text-gray-600">
-                From Dhaka to the remote corners of Bangladesh, we deliver right
-                to your doorstep with our trusted logistics partners.
-              </p>
-            </div>
-            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-lagoon-100 rounded-full flex items-center justify-center text-lagoon-600 mb-4">
-                <Phone className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">
-                24/7 Support
-              </h3>
-              <p className="text-gray-600">
-                Our support team is always ready to assist you. Whether it's a
-                sizing query or an order update, we're just a call away.
-              </p>
-            </div>
-            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-lagoon-100 rounded-full flex items-center justify-center text-lagoon-600 mb-4">
-                <Mail className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">
-                Easy Returns
-              </h3>
-              <p className="text-gray-600">
-                Not satisfied with the fit? No worries! We offer a hassle-free
-                return and exchange policy for your peace of mind.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </div>

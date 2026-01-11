@@ -18,16 +18,16 @@ const Header = () => {
         {/* Logo */}
         <Link
           to="/"
-          className="text-2xl font-bold text-lagoon-700 tracking-tight"
+          className="text-3xl font-serif font-bold text-primary-900 tracking-widest uppercase"
         >
           JABAIBGROUP
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-12">
           <Link
             to="/"
-            className="text-gray-600 hover:text-lagoon-600 font-medium transition-colors"
+            className="text-xs font-bold text-gray-500 hover:text-accent-600 uppercase tracking-[0.2em] transition-colors"
           >
             Home
           </Link>
@@ -38,7 +38,7 @@ const Header = () => {
             <Link
               key={item}
               to={`/${item.toLowerCase()}`}
-              className="text-gray-600 hover:text-lagoon-600 font-medium transition-colors"
+              className="text-xs font-bold text-gray-500 hover:text-accent-600 uppercase tracking-[0.2em] transition-colors"
             >
               {item}
             </Link>

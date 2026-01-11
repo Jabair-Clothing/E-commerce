@@ -7,8 +7,12 @@ const ProductSelectors = ({
   onSelect,
   checkAvailability,
 }) => {
+  if (!availableAttributes || Object.keys(availableAttributes).length === 0) {
+    return null;
+  }
+
   return (
-    <div className="space-y-6 mb-8">
+    <div className="space-y-6 mb-10">
       {Object.entries(availableAttributes).map(([attrName, values]) => (
         <div key={attrName}>
           <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">

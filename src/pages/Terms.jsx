@@ -2,13 +2,13 @@ import React from "react";
 
 const Terms = () => {
   return (
-    <div className="bg-gray-50 min-h-screen py-12 px-4">
-      <div className="container mx-auto max-w-4xl bg-white rounded-2xl shadow-sm p-8 md:p-12">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+    <div className="bg-white min-h-screen py-20 px-4 animate-fade-in">
+      <div className="container mx-auto max-w-4xl bg-white border border-gray-100 p-8 md:p-16 shadow-lg">
+        <h1 className="text-3xl md:text-5xl font-serif font-bold text-primary-900 mb-10 text-center tracking-wide">
           Terms of Service
         </h1>
 
-        <div className="space-y-8 text-gray-600 leading-relaxed">
+        <div className="space-y-8 text-gray-600 leading-relaxed font-light">
           <section>
             <p>
               Welcome to our online store. By determining to shop with us, you
@@ -18,7 +18,7 @@ const Terms = () => {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-3">
+            <h2 className="text-xl font-bold text-primary-900 mb-3 uppercase text-sm tracking-wider">
               1. General Conditions
             </h2>
             <p>
@@ -30,10 +30,10 @@ const Terms = () => {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-3">
+            <h2 className="text-xl font-bold text-primary-900 mb-3 uppercase text-sm tracking-wider">
               2. Products and Pricing
             </h2>
-            <ul className="list-disc pl-5 space-y-2">
+            <ul className="list-disc pl-5 space-y-2 marker:text-accent-500">
               <li>
                 Prices for our products are subject to change without notice.
               </li>
@@ -51,7 +51,7 @@ const Terms = () => {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-3">
+            <h2 className="text-xl font-bold text-primary-900 mb-3 uppercase text-sm tracking-wider">
               3. Billing and Account Information
             </h2>
             <p>
@@ -63,7 +63,7 @@ const Terms = () => {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-3">
+            <h2 className="text-xl font-bold text-primary-900 mb-3 uppercase text-sm tracking-wider">
               4. Delivery Policy (Bangladesh)
             </h2>
             <p>
@@ -75,7 +75,7 @@ const Terms = () => {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-3">
+            <h2 className="text-xl font-bold text-primary-900 mb-3 uppercase text-sm tracking-wider">
               5. Governing Law
             </h2>
             <p>
@@ -85,10 +85,10 @@ const Terms = () => {
           </section>
 
           <section className="pt-6 border-t border-gray-100">
-            <p className="text-sm">
+            <p className="text-sm italic">
               Any questions about the Terms of Service should be sent to us at{" "}
-              <span className="font-semibold text-lagoon-600">
-                support@example.com
+              <span className="font-bold text-accent-600">
+                info@jabaibgroup.com
               </span>
               .
             </p>

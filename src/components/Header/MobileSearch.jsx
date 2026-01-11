@@ -51,27 +51,27 @@ const MobileSearch = ({ isOpen, onClose }) => {
       <div className="relative">
         <input
           type="text"
-          placeholder="Search products..."
+          placeholder="SEARCH"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 pl-4 pr-10 outline-none focus:border-lagoon-500 text-sm"
+          className="w-full bg-white border-b-2 border-primary-900 rounded-none py-3 pl-4 pr-10 outline-none text-base font-serif font-bold uppercase tracking-widest"
           autoFocus
         />
         {isSearching ? (
-          <Loader2 className="absolute right-3 top-2.5 w-4 h-4 text-lagoon-600 animate-spin" />
+          <Loader2 className="absolute right-3 top-3 w-5 h-5 text-accent-600 animate-spin" />
         ) : (
           <button
             onClick={onClose}
-            className="absolute right-3 top-2.5 text-gray-400"
+            className="absolute right-3 top-3 text-gray-400"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         )}
       </div>
 
       {/* Mobile Search Results */}
       {searchQuery.length > 0 && (
-        <div className="mt-2 max-h-[60vh] overflow-y-auto bg-white rounded-lg border border-gray-100 shadow-sm">
+        <div className="mt-4 max-h-[60vh] overflow-y-auto bg-white rounded-none border-none">
           {searchResults.length > 0 ? (
             <div>
               {searchResults.map((product) => (
@@ -82,9 +82,9 @@ const MobileSearch = ({ isOpen, onClose }) => {
                     onClose();
                     setSearchQuery("");
                   }}
-                  className="flex items-center p-3 border-b border-gray-50 last:border-none active:bg-gray-50"
+                  className="flex items-center p-4 border-b border-gray-50 last:border-none active:bg-gray-50"
                 >
-                  <div className="w-10 h-10 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-20 bg-gray-100 flex-shrink-0">
                     <img
                       src={
                         product.primary_image ||
@@ -94,12 +94,12 @@ const MobileSearch = ({ isOpen, onClose }) => {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="ml-3 flex-1 min-w-0">
-                    <h4 className="text-sm font-medium text-gray-900 truncate">
+                  <div className="ml-4 flex-1 min-w-0">
+                    <h4 className="text-sm font-bold text-gray-900 truncate uppercase tracking-wide">
                       {product.name}
                     </h4>
-                    <div className="flex items-center mt-1">
-                      <span className="text-xs font-bold text-lagoon-700">
+                    <div className="flex items-center mt-2">
+                      <span className="text-xs font-bold text-gray-900">
                         Tk {product.price}
                       </span>
                     </div>

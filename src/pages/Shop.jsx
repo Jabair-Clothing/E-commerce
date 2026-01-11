@@ -15,6 +15,7 @@ import {
   recordCategoryView,
   recordParentCategoryView,
 } from "../services/api";
+import ProductCard from "../components/UI/ProductCard";
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
@@ -250,11 +251,15 @@ const Shop = () => {
   return (
     <div className="container mx-auto px-4 py-8 animate-fade-in">
       {/* Top Bar: Title & Mobile Filter Toggle (Future) */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Shop</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            {loading ? "Updating..." : `${pagination.total} Products Found`}
+          <h1 className="text-4xl font-serif font-bold text-primary-900">
+            Catalog
+          </h1>
+          <p className="text-gray-500 text-sm mt-2 tracking-wide">
+            {loading
+              ? "Updating..."
+              : `${pagination.total} Premium Styles Found`}
           </p>
         </div>
 
@@ -391,63 +396,17 @@ const Shop = () => {
         <div className="flex-1">
           {loading ? (
             <div className="h-96 flex items-center justify-center">
-              <Loader2 className="w-12 h-12 text-lagoon-600 animate-spin" />
+              <Loader2 className="w-12 h-12 text-accent-600 animate-spin" />
             </div>
           ) : error ? (
-            <div className="text-center py-20 bg-red-50 rounded-2xl text-red-600">
+            <div className="text-center py-20 bg-red-50 rounded-sm text-red-600">
               {error}
             </div>
           ) : products.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
                 {products.map((product) => (
-                  <div
-                    key={product.id}
-                    className="group flex flex-col bg-white rounded-2xl border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden"
-                  >
-                    <div className="relative aspect-[4/5] bg-gray-100 overflow-hidden">
-                      <img
-                        src={
-                          product.primary_image ||
-                          "https://dummyimage.com/600x800/f3f4f6/9ca3af&text=No+Image"
-                        }
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute top-3 right-3">
-                        <span className="bg-white/90 backdrop-blur text-xs font-bold px-2 py-1 rounded shadow-sm">
-                          {product.stock_quantity > 0
-                            ? "In Stock"
-                            : "Out of Stock"}
-                        </span>
-                      </div>
-                      {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <Link
-                          to={`/product/${product.id}/${product.slug}`}
-                          className="bg-white text-gray-900 px-6 py-3 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-all shadow-xl hover:bg-lagoon-50"
-                        >
-                          View Details
-                        </Link>
-                      </div>
-                    </div>
-
-                    <div className="p-4 flex flex-col flex-1">
-                      <div className="text-xs text-gray-500 mb-1">
-                        {product.category?.name}
-                      </div>
-                      <h3 className="font-bold text-gray-900 text-lg mb-2 line-clamp-2 hover:text-lagoon-600 transition-colors">
-                        <Link to={`/product/${product.id}/${product.slug}`}>
-                          {product.name}
-                        </Link>
-                      </h3>
-                      <div className="mt-auto flex items-center justify-between">
-                        <span className="text-xl font-bold text-gray-900">
-                          Tk {product.price}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
 

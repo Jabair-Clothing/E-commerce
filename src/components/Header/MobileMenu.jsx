@@ -47,13 +47,13 @@ const MobileMenu = ({ isOpen, onClose }) => {
 
   return (
     <>
-      <div className="md:hidden bg-white border-t border-gray-100 py-4 px-4 shadow-lg absolute w-full left-0 animate-fade-in-down h-[calc(100vh-80px)] overflow-y-auto z-40">
-        <div className="flex flex-col space-y-4">
+      <div className="md:hidden bg-white border-t border-gray-100 py-6 px-4 shadow-lg absolute w-full left-0 animate-fade-in-down h-[calc(100vh-80px)] overflow-y-auto z-40">
+        <div className="flex flex-col space-y-6">
           {["Home", "Shop", "About", "Contact"].map((item) => (
             <Link
               key={item}
               to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-              className="text-gray-600 hover:text-lagoon-600 font-medium text-lg"
+              className="text-primary-800 hover:text-accent-600 font-serif font-bold text-2xl tracking-wide border-b border-gray-50 pb-2"
               onClick={onClose}
             >
               {item}
@@ -99,7 +99,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
                     {mobileActiveCategory === item.id && (
                       <div className="pl-4 mt-2 space-y-2 border-l-2 border-gray-100">
                         {isLoadingDetails ? (
-                          <div className="flex items-center text-lagoon-600">
+                          <div className="flex items-center text-accent-600">
                             <Loader2 className="w-4 h-4 animate-spin mr-2" />{" "}
                             Loading...
                           </div>
@@ -107,7 +107,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
                           <>
                             <Link
                               to={`/category/${item.slug}`}
-                              className="block text-sm text-lagoon-600 font-semibold mb-2"
+                              className="block text-sm text-accent-600 font-semibold mb-2 uppercase tracking-wider"
                               onClick={onClose}
                             >
                               View All {item.name}
@@ -116,7 +116,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
                               <Link
                                 key={sub.id}
                                 to={`/category/${item.slug}/${sub.slug}`}
-                                className="block text-sm text-gray-500 hover:text-lagoon-600"
+                                className="block text-sm text-gray-500 hover:text-accent-600 transition-colors"
                                 onClick={onClose}
                               >
                                 {sub.name}

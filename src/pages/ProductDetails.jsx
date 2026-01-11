@@ -210,9 +210,21 @@ const ProductDetails = () => {
     );
   }
 
+  const handleRequestQuote = () => {
+    const subject = encodeURIComponent(`Inquiry about ${product.name}`);
+    const body = encodeURIComponent(
+      `Hi JABAIBGROUP Team,\n\nI am interested in the product: ${
+        product.name
+      } (SKU: ${
+        activeSku ? activeSku.sku : product.sku || "N/A"
+      }).\n\nPlease provide me with a quote and minimum order quantity details.\n\nThank you.`
+    );
+    window.location.href = `mailto:info@jabaibgroup.com?subject=${subject}&body=${body}`;
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8 animate-fade-in">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <div className="container mx-auto px-4 py-12 animate-fade-in">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
         {/* Left: Image Gallery */}
         <ProductGallery
           images={product.images}
@@ -236,6 +248,14 @@ const ProductDetails = () => {
             onSelect={handleAttributeSelect}
             checkAvailability={checkAvailability}
           />
+
+          {/* Request Quote Button */}
+          <button
+            onClick={handleRequestQuote}
+            className="w-full bg-black text-white font-bold uppercase tracking-[0.2em] py-5 mb-0 hover:bg-gray-900 transition-colors"
+          >
+            Request Price
+          </button>
 
           <ProductDescription description={product.description} />
         </div>

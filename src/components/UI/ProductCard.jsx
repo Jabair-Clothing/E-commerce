@@ -1,5 +1,5 @@
 import React from "react";
-import { Eye } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const ProductCard = ({ product, onQuickView }) => {
@@ -14,21 +14,6 @@ const ProductCard = ({ product, onQuickView }) => {
             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
           />
         </Link>
-
-        {/* Overlay Actions */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-4 pointer-events-none">
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (onQuickView) onQuickView(product);
-            }}
-            className="pointer-events-auto p-3 bg-white text-gray-800 rounded-full hover:bg-lagoon-500 hover:text-white transition-colors transform hover:scale-110 shadow-lg"
-            title="Quick View"
-          >
-            <Eye className="w-5 h-5" />
-          </button>
-        </div>
 
         {/* Discount Badge */}
         {product.discount_price &&
@@ -47,48 +32,29 @@ const ProductCard = ({ product, onQuickView }) => {
       </div>
 
       {/* Product Details */}
-      <div className="p-4">
-        <p className="text-sm text-gray-500 mb-1">
-          {product.category?.name || "Category"}
+      <div className="p-6 bg-white">
+        <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">
+          {product.category?.name || "Collection"}
         </p>
-        <h3 className="font-semibold text-gray-800 text-lg mb-2 truncate group-hover:text-lagoon-600 transition-colors">
+        <h3 className="font-serif font-bold text-primary-900 text-lg mb-3 truncate group-hover:text-accent-600 transition-colors">
           <Link to={`/product/${product.id}/${product.slug}`}>
             {product.name}
           </Link>
         </h3>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-4">
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-gray-900">
+            <span className="text-sm font-medium text-gray-900">
+              {/* Price or 'By Request' depends on B2B nature, keeping price for now but styled elegantly */}
               Tk {product.discount_price || product.price}
             </span>
-            {product.discount_price &&
-              parseFloat(product.discount_price) <
-                parseFloat(product.regular_price || product.price) && (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-400 line-through">
-                    Tk {product.regular_price || product.price}
-                  </span>
-                  <span className="text-xs font-bold text-red-500">
-                    {Math.round(
-                      ((parseFloat(product.regular_price || product.price) -
-                        parseFloat(product.discount_price)) /
-                        parseFloat(product.regular_price || product.price)) *
-                        100
-                    )}
-                    % OFF
-                  </span>
-                </div>
-              )}
           </div>
-          <div className="flex space-x-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                className={`w-2 h-2 rounded-full ${
-                  star <= 4 ? "bg-yellow-400" : "bg-gray-200"
-                }`}
-              ></span>
-            ))}
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
+            <Link
+              to={`/product/${product.id}/${product.slug}`}
+              className="text-accent-600"
+            >
+              <ArrowRight className="w-5 h-5" />
+            </Link>
           </div>
         </div>
       </div>

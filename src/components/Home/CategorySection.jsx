@@ -32,20 +32,20 @@ const CategorySection = () => {
   }
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-24 bg-white">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-end mb-12">
+        <div className="flex justify-between items-end mb-16">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Shop by Category
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-primary-900 mb-4">
+              Our Collections
             </h2>
-            <div className="h-1 w-20 bg-lagoon-500 rounded"></div>
+            <div className="h-1 w-24 bg-accent-500"></div>
           </div>
           <Link
             to="/categories"
-            className="hidden md:flex items-center text-lagoon-600 font-medium hover:text-lagoon-700 transition-colors"
+            className="hidden md:flex items-center text-primary-600 font-bold hover:text-accent-600 transition-colors uppercase tracking-widest text-sm"
           >
-            View All <ArrowRight className="ml-2 w-4 h-4" />
+            All Categories <ArrowRight className="ml-2 w-4 h-4" />
           </Link>
         </div>
 
